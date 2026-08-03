@@ -28,13 +28,13 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<Compile Remove="LICENSE.txt" />
+		<Compile Remove="LICENSE*.txt" />
 		<Compile Remove="README.md" />
 
-		<EmbeddedResource Remove="LICENSE.txt" />
+		<EmbeddedResource Remove="LICENSE*.txt" />
 		<EmbeddedResource Remove="README.md" />
 
-		<None Include="LICENSE.txt" Pack="true" />
+		<None Include="LICENSE*.txt" Pack="true" />
 		<None Include="README.md" Pack="true" />
 	</ItemGroup>
 
