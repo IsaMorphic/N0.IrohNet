@@ -1,0 +1,117 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFrameworks>net10.0</TargetFrameworks>
+		<RuntimeIdentifiers>win-x64;win-arm64;osx-x64;osx-arm64;linux-x64;linux-arm64;iossimulator-x64;ios-arm64;android-x64;android-arm64</RuntimeIdentifiers>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+		<AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+		<OutputType>Library</OutputType>
+		<LangVersion>preview</LangVersion>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<Compile Remove="iroh-bindgen\**" />
+		<Compile Remove="iroh\**" />
+		<Compile Remove="runtimes\**" />
+		<Compile Remove="*.git*" />
+
+		<EmbeddedResource Remove="iroh-bindgen\**" />
+		<EmbeddedResource Remove="iroh\**" />
+		<EmbeddedResource Remove="runtimes\**" />
+		<EmbeddedResource Remove="*.git*" />
+
+		<None Remove="iroh-bindgen\**" />
+		<None Remove="iroh\**" />
+		<None Remove="runtimes\**" />
+		<None Remove="*.git*" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Compile Remove="LICENSE.txt" />
+		<Compile Remove="README.md" />
+
+		<EmbeddedResource Remove="LICENSE.txt" />
+		<EmbeddedResource Remove="README.md" />
+
+		<None Include="LICENSE.txt" Pack="true" />
+		<None Include="README.md" Pack="true" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Compile Remove="NativeMethods.g.cs" />
+		<Compile Include="NativeMethods.g.cs" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="csbindgen" Version="1.9.8">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+	</ItemGroup>
+
+	<PropertyGroup>
+		<RustProfile Condition="'$(Configuration)' == 'Release'">release</RustProfile>
+		<RustProfile Condition="'$(Configuration)' == 'Debug'">dev</RustProfile>
+
+		<RustConfiguration Condition="'$(Configuration)' == 'Release'">release</RustConfiguration>
+		<RustConfiguration Condition="'$(Configuration)' == 'Debug'">debug</RustConfiguration>
+
+		<RustTargetTriple Condition="'$(RuntimeIdentifier)' == 'win-x64'">x86_64-pc-windows-msvc</RustTargetTriple>
+		<RustTargetTriple Condition="'$(RuntimeIdentifier)' == 'win-arm64'">aarch64-pc-windows-msvc</RustTargetTriple>
+		<RustLibraryFileName Condition="'$(RuntimeIdentifier)' == 'win-x64'">iroh.dll</RustLibraryFileName>
+		<RustLibraryFileName Condition="'$(RuntimeIdentifier)' == 'win-arm64'">iroh.dll</RustLibraryFileName>
+
+		<RustTargetTriple Condition="'$(RuntimeIdentifier)' == 'linux-x64'">x86_64-unknown-linux-gnu</RustTargetTriple>
+		<RustTargetTriple Condition="'$(RuntimeIdentifier)' == 'linux-arm64'">aarch64-unknown-linux-gnu</RustTargetTriple>
+		<RustLibraryFileName Condition="'$(RuntimeIdentifier)' == 'linux-x64'">libiroh.so</RustLibraryFileName>
+		<RustLibraryFileName Condition="'$(RuntimeIdentifier)' == 'linux-arm64'">libiroh.so</RustLibraryFileName>
+
+		<RustTargetTriple Condition="'$(RuntimeIdentifier)' == 'osx-x64'">x86_64-apple-darwin</RustTargetTriple>
+		<RustTargetTriple Condition="'$(RuntimeIdentifier)' == 'osx-arm64'">aarch64-apple-darwin</RustTargetTriple>
+		<RustLibraryFileName Condition="'$(RuntimeIdentifier)' == 'osx-x64'">libiroh.dylib</RustLibraryFileName>
+		<RustLibraryFileName Condition="'$(RuntimeIdentifier)' == 'osx-arm64'">libiroh.dylib</RustLibraryFileName>
+
+		<RustTargetTriple Condition="'$(RuntimeIdentifier)' == 'iossimulator-x64'">x86_64-apple-ios</RustTargetTriple>
+		<RustTargetTriple Condition="'$(RuntimeIdentifier)' == 'iossimulator-arm64'">aarch64-apple-ios</RustTargetTriple>
+		<RustTargetTriple Condition="'$(RuntimeIdentifier)' == 'ios-arm64'">aarch64-apple-ios</RustTargetTriple>
+		<RustLibraryFileName Condition="'$(RuntimeIdentifier)' == 'iossimulator-x64'">libiroh.dylib</RustLibraryFileName>
+		<RustLibraryFileName Condition="'$(RuntimeIdentifier)' == 'iossimulator-arm64'">libiroh.dylib</RustLibraryFileName>
+		<RustLibraryFileName Condition="'$(RuntimeIdentifier)' == 'ios-arm64'">libiroh.dylib</RustLibraryFileName>
+
+		<RustTargetTriple Condition="'$(RuntimeIdentifier)' == 'android-arm64'">aarch64-linux-android</RustTargetTriple>
+		<RustTargetTriple Condition="'$(RuntimeIdentifier)' == 'android-x64'">x86_64-linux-android</RustTargetTriple>
+
+		<RustTargetAndroid Condition="'$(RuntimeIdentifier)' == 'android-arm64'">arm64-v8a</RustTargetAndroid>
+		<RustTargetAndroid Condition="'$(RuntimeIdentifier)' == 'android-x64'">x86_64</RustTargetAndroid>
+
+		<RustLibraryFileName Condition="'$(RuntimeIdentifier)' == 'android-arm64'">libiroh.so</RustLibraryFileName>
+		<RustLibraryFileName Condition="'$(RuntimeIdentifier)' == 'android-x64'">libiroh.so</RustLibraryFileName>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<RustTargetOutput Include="iroh/target/$(RustTargetTriple)/$(RustConfiguration)/$(RustLibraryFileName)" />
+		<NativeLibs Condition="'$(RuntimeIdentifier)' != ''" Include="runtimes/$(RuntimeIdentifier)/native/$(RustLibraryFileName)" />
+		<None Condition="'$(RuntimeIdentifier)' != ''" Include="@(NativeLibs)">
+			<Pack>true</Pack>
+			<PackageCopyToOutput>true</PackageCopyToOutput>
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+	</ItemGroup>
+
+	<Target Condition="'$(RuntimeIdentifier)' != ''" Name="rustc" BeforeTargets="PreBuildEvent">
+		<!--DESKTOP RUST BUILD-->
+		<Exec WorkingDirectory="iroh-bindgen" Condition="!$(RuntimeIdentifier.StartsWith('android')) And !$(RuntimeIdentifier.StartsWith('ios'))" Command="cargo build --profile $(RustProfile) --target $(RustTargetTriple)" />
+		<Exec WorkingDirectory="iroh" Condition="!$(RuntimeIdentifier.StartsWith('android')) And !$(RuntimeIdentifier.StartsWith('ios'))" Command="cargo build --profile $(RustProfile) --target $(RustTargetTriple)" />
+
+		<!--ANDROID RUST BUILD-->
+		<Exec WorkingDirectory="iroh-bindgen" Condition="$(RuntimeIdentifier.StartsWith('android'))" Command="cargo ndk -t $(RustTargetAndroid) -- build --profile $(RustProfile) --features android" />
+		<Exec WorkingDirectory="iroh" Condition="$(RuntimeIdentifier.StartsWith('android'))" Command="cargo ndk -t $(RustTargetAndroid) -- build --profile $(RustProfile)" />
+
+		<!--iOS RUST BUILD-->
+		<Exec WorkingDirectory="iroh-bindgen" Condition="$(RuntimeIdentifier.StartsWith('ios'))" Command="cargo lipo --targets $(RustTargetTriple) --profile $(RustProfile)" />
+		<Exec WorkingDirectory="iroh" Condition="$(RuntimeIdentifier.StartsWith('ios'))" Command="cargo lipo --targets $(RustTargetTriple) --profile $(RustProfile)" />
+
+		<Copy SourceFiles="@(RustTargetOutput)" DestinationFolder="runtimes/$(RuntimeIdentifier)/native" />
+	</Target>
+</Project>

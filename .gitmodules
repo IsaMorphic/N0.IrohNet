@@ -1,0 +1,3 @@
+[submodule "iroh"]
+	path = iroh
+	url = https://github.com/n0-computer/iroh.git

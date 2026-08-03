@@ -1,0 +1,17 @@
+[package]
+authors = ["IsaMorphic <me@isamorphic.dev>"]
+build = "build.rs"
+name = "irohnet-bindgen"
+version = "0.101.0"
+edition = "2021"
+links = "iroh"
+
+[lib]
+crate-type = [ "cdylib" ]
+
+[build-dependencies]
+bindgen = "*"
+csbindgen = "*"
+
+[features]
+android = []
