@@ -1,3 +1,3 @@
-[submodule "iroh"]
-	path = iroh
-	url = https://github.com/n0-computer/iroh.git
+[submodule "iroh-c-ffi"]
+	path = iroh-c-ffi
+	url = https://github.com/n0-computer/iroh-c-ffi.git

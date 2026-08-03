@@ -428,7 +428,10 @@ FodyWeavers.xsd
 *.msm
 *.msp
 
+# Rust
+target/
+
 # Custom rules
 *.g.cs
-Cargo.lock
+iroh*.rs
 runtimes/

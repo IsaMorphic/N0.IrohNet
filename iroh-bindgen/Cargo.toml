@@ -1,17 +1,14 @@
 [package]
-authors = ["IsaMorphic <me@isamorphic.dev>"]
-build = "build.rs"
-name = "irohnet-bindgen"
-version = "0.101.0"
+name = "iroh"
+version = "1.0.3"
 edition = "2021"
-links = "iroh"
 
 [lib]
-crate-type = [ "cdylib" ]
+crate-type = ["cdylib"]
+
+[dependencies]
+iroh-c-ffi = { path = "../iroh-c-ffi", features = ["headers"] }
 
 [build-dependencies]
-bindgen = "*"
-csbindgen = "*"
-
-[features]
-android = []
+csbindgen = "1.9.6"
+bindgen = "0.72.1"

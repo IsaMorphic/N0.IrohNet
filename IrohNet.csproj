@@ -12,17 +12,17 @@
 
 	<ItemGroup>
 		<Compile Remove="iroh-bindgen\**" />
-		<Compile Remove="iroh\**" />
+		<Compile Remove="iroh-c-ffi\**" />
 		<Compile Remove="runtimes\**" />
 		<Compile Remove="*.git*" />
 
 		<EmbeddedResource Remove="iroh-bindgen\**" />
-		<EmbeddedResource Remove="iroh\**" />
+		<EmbeddedResource Remove="iroh-c-ffi\**" />
 		<EmbeddedResource Remove="runtimes\**" />
 		<EmbeddedResource Remove="*.git*" />
 
 		<None Remove="iroh-bindgen\**" />
-		<None Remove="iroh\**" />
+		<None Remove="iroh-c-ffi\**" />
 		<None Remove="runtimes\**" />
 		<None Remove="*.git*" />
 	</ItemGroup>
@@ -90,7 +90,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<RustTargetOutput Include="iroh/target/$(RustTargetTriple)/$(RustConfiguration)/$(RustLibraryFileName)" />
+		<RustTargetOutput Include="iroh-bindgen/target/$(RustTargetTriple)/$(RustConfiguration)/$(RustLibraryFileName)" />
 		<NativeLibs Condition="'$(RuntimeIdentifier)' != ''" Include="runtimes/$(RuntimeIdentifier)/native/$(RustLibraryFileName)" />
 		<None Condition="'$(RuntimeIdentifier)' != ''" Include="@(NativeLibs)">
 			<Pack>true</Pack>
@@ -102,15 +102,12 @@
 	<Target Condition="'$(RuntimeIdentifier)' != ''" Name="rustc" BeforeTargets="PreBuildEvent">
 		<!--DESKTOP RUST BUILD-->
 		<Exec WorkingDirectory="iroh-bindgen" Condition="!$(RuntimeIdentifier.StartsWith('android')) And !$(RuntimeIdentifier.StartsWith('ios'))" Command="cargo build --profile $(RustProfile) --target $(RustTargetTriple)" />
-		<Exec WorkingDirectory="iroh" Condition="!$(RuntimeIdentifier.StartsWith('android')) And !$(RuntimeIdentifier.StartsWith('ios'))" Command="cargo build --profile $(RustProfile) --target $(RustTargetTriple)" />
 
 		<!--ANDROID RUST BUILD-->
 		<Exec WorkingDirectory="iroh-bindgen" Condition="$(RuntimeIdentifier.StartsWith('android'))" Command="cargo ndk -t $(RustTargetAndroid) -- build --profile $(RustProfile) --features android" />
-		<Exec WorkingDirectory="iroh" Condition="$(RuntimeIdentifier.StartsWith('android'))" Command="cargo ndk -t $(RustTargetAndroid) -- build --profile $(RustProfile)" />
 
 		<!--iOS RUST BUILD-->
 		<Exec WorkingDirectory="iroh-bindgen" Condition="$(RuntimeIdentifier.StartsWith('ios'))" Command="cargo lipo --targets $(RustTargetTriple) --profile $(RustProfile)" />
-		<Exec WorkingDirectory="iroh" Condition="$(RuntimeIdentifier.StartsWith('ios'))" Command="cargo lipo --targets $(RustTargetTriple) --profile $(RustProfile)" />
 
 		<Copy SourceFiles="@(RustTargetOutput)" DestinationFolder="runtimes/$(RuntimeIdentifier)/native" />
 	</Target>
