@@ -7,8 +7,21 @@
 		<Nullable>enable</Nullable>
 		<AllowUnsafeBlocks>True</AllowUnsafeBlocks>
 		<OutputType>Library</OutputType>
-		<LangVersion>preview</LangVersion>
 	</PropertyGroup>
+
+	<PropertyGroup>
+		<IsPackable>true</IsPackable>
+    	<PackageId>N0.IrohNet</PackageId>
+    	<Version>1.0.3</Version>
+    	<Company>N0 Inc.</Company>
+    	<Description>C# .NET bindings for the Iroh library</Description>
+    	<PackageTags>iroh;networking;bindings;native</PackageTags>
+    	<PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
+    	<RepositoryUrl>https://github.com/IsaMorphic/N0.IrohNet</RepositoryUrl>
+    	<RepositoryType>git</RepositoryType>
+	</PropertyGroup>
+			
 
 	<ItemGroup>
 		<Compile Remove="iroh-bindgen\**" />
@@ -28,14 +41,14 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<Compile Remove="LICENSE*.txt" />
+		<Compile Remove="LICENSE.txt" />
 		<Compile Remove="README.md" />
 
-		<EmbeddedResource Remove="LICENSE*.txt" />
+		<EmbeddedResource Remove="LICENSE.txt" />
 		<EmbeddedResource Remove="README.md" />
 
-		<None Include="LICENSE*.txt" Pack="true" />
-		<None Include="README.md" Pack="true" />
+		<None Include="LICENSE.txt" Pack="true" PackagePath="/" />
+		<None Include="README.md" Pack="true" PackagePath="/" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -92,7 +105,7 @@
 	<ItemGroup>
 		<RustTargetOutput Include="iroh-bindgen/target/$(RustTargetTriple)/$(RustConfiguration)/$(RustLibraryFileName)" />
 		<NativeLibs Condition="'$(RuntimeIdentifier)' != ''" Include="runtimes/$(RuntimeIdentifier)/native/$(RustLibraryFileName)" />
-		<None Condition="'$(RuntimeIdentifier)' != ''" Include="@(NativeLibs)">
+		<None Condition="'$(RuntimeIdentifier)' != ''" Include="@(NativeLibs)" PackagePath="runtimes/">
 			<Pack>true</Pack>
 			<PackageCopyToOutput>true</PackageCopyToOutput>
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

@@ -2,10 +2,10 @@
 using System.Reflection;
 using System.Runtime.InteropServices;
 
-namespace IrohNet
+namespace N0.IrohNet
 {
     [GroupedNativeMethods]
-    internal static unsafe partial class NativeMethods
+    public static partial class NativeMethods
     {
         // https://docs.microsoft.com/en-us/dotnet/standard/native-interop/cross-platform
         // Library path will search

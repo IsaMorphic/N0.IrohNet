@@ -12,9 +12,10 @@ fn main() -> Result<(), Box<dyn Error>> {
         .input_bindgen_file("src/iroh.rs")
         .rust_file_header("extern crate iroh_c_ffi;\nuse super::iroh::*;")
         .rust_method_prefix("iroh_")
+        .csharp_entry_point_prefix("iroh_")
         .csharp_dll_name("iroh")
-        .csharp_namespace("IrohNet")
-        .csharp_method_prefix("iroh_")
+        .csharp_namespace("N0.IrohNet")
+        .csharp_class_accessibility("public")
         .generate_to_file("src/iroh_ffi.rs", "../NativeMethods.g.cs")
         .unwrap();
 
