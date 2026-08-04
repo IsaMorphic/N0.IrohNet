@@ -12,7 +12,7 @@
 	<PropertyGroup>
 		<IsPackable>true</IsPackable>
     	<PackageId>N0.IrohNet</PackageId>
-    	<Version>1.0.3</Version>
+    	<Version>0.101.0</Version>
     	<Company>N0 Inc.</Company>
     	<Description>C# .NET bindings for the Iroh library</Description>
     	<PackageTags>iroh;networking;bindings;native</PackageTags>
