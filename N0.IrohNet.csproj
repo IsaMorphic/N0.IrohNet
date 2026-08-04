@@ -105,7 +105,7 @@
 	<ItemGroup>
 		<RustTargetOutput Include="iroh-bindgen/target/$(RustTargetTriple)/$(RustConfiguration)/$(RustLibraryFileName)" />
 		<NativeLibs Condition="'$(RuntimeIdentifier)' != ''" Include="runtimes/$(RuntimeIdentifier)/native/$(RustLibraryFileName)" />
-		<None Condition="'$(RuntimeIdentifier)' != ''" Include="@(NativeLibs)" PackagePath="runtimes/">
+		<None Condition="'$(RuntimeIdentifier)' != ''" Include="@(NativeLibs)" PackagePath="runtimes/$(RuntimeIdentifier)/native">
 			<Pack>true</Pack>
 			<PackageCopyToOutput>true</PackageCopyToOutput>
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
