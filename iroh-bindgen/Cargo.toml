@@ -1,5 +1,5 @@
 [package]
-name = "iroh_bindgen"
+name = "iroh-bindgen"
 version = "0.101.0"
 edition = "2021"
 
