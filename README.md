@@ -25,8 +25,7 @@ Android
 
 iOS / macOS
 
-1. [XCode](https://developer.apple.com/xcode/) (required for either)
-2. [`cargo-lipo`](https://github.com/timnn/cargo-lipo) (only needed for iOS)
+1. [XCode](https://developer.apple.com/xcode/)
 
 ## Adding the Code to your Project
 
@@ -56,11 +55,11 @@ These bindings will automatically compile the necessary native dependencies usin
 
 ### For Mobile Development (Android)
 
-For native Android builds, one must ensure that `cargo-ndk` is installed in a Linux-based development machine. WSL works just fine for Windows users. Then, ensure that Android Studio is installed within that environment and add an older NDK version (r29 works just fine). Afterwards, make sure to use `rustup` to add the appropriate target architectures for Android platforms. Then simply pass an Android RID to `dotnet build`!
+For native Android builds, one must ensure that `cargo-ndk` is installed in a Linux-based development machine. WSL works just fine for Windows users. Then, ensure that Android Studio is installed within that environment and add an older NDK version (r29 works just fine). Afterwards, make sure to use `rustup` to add the appropriate target architectures for Android platforms. Then simply pass an Android RID to `dotnet build`.
 
 ### For Mobile Development (iOS)
 
-For native iOS builds, ensure that XCode is installed on your macOS build machine, along with the current version of XCode Command-line Tools and the most recent iOS SDK. Next, install `cargo-lipo` from above, and use `rustup` to add iOS targets to `rustc`. Then simply pass an `ios` or `iossimulator` RID to `dotnet build`!
+For native iOS builds, ensure that XCode is installed on your macOS build machine, along with the current version of XCode Command-line Tools and the most recent iOS SDK. Next, use `rustup` to add iOS targets to `rustc`. Then simply pass an `ios` or `iossimulator` RID to `dotnet build`.
 
 ## Updating the Bindings
 
