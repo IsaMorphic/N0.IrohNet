@@ -429,6 +429,7 @@ FodyWeavers.xsd
 *.msp
 
 # Rust
+Cargo.lock
 target/
 
 # Custom rules

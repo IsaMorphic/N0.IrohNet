@@ -72,25 +72,25 @@
 
 		<RustTargetTriple Condition="'$(RuntimeIdentifier)' == 'win-x64'">x86_64-pc-windows-msvc</RustTargetTriple>
 		<RustTargetTriple Condition="'$(RuntimeIdentifier)' == 'win-arm64'">aarch64-pc-windows-msvc</RustTargetTriple>
-		<RustLibraryFileName Condition="'$(RuntimeIdentifier)' == 'win-x64'">iroh.dll</RustLibraryFileName>
-		<RustLibraryFileName Condition="'$(RuntimeIdentifier)' == 'win-arm64'">iroh.dll</RustLibraryFileName>
+		<RustLibraryFileName Condition="'$(RuntimeIdentifier)' == 'win-x64'">iroh_bindgen.dll</RustLibraryFileName>
+		<RustLibraryFileName Condition="'$(RuntimeIdentifier)' == 'win-arm64'">iroh_bindgen.dll</RustLibraryFileName>
 
 		<RustTargetTriple Condition="'$(RuntimeIdentifier)' == 'linux-x64'">x86_64-unknown-linux-gnu</RustTargetTriple>
 		<RustTargetTriple Condition="'$(RuntimeIdentifier)' == 'linux-arm64'">aarch64-unknown-linux-gnu</RustTargetTriple>
-		<RustLibraryFileName Condition="'$(RuntimeIdentifier)' == 'linux-x64'">libiroh.so</RustLibraryFileName>
-		<RustLibraryFileName Condition="'$(RuntimeIdentifier)' == 'linux-arm64'">libiroh.so</RustLibraryFileName>
+		<RustLibraryFileName Condition="'$(RuntimeIdentifier)' == 'linux-x64'">libiroh_bindgen.so</RustLibraryFileName>
+		<RustLibraryFileName Condition="'$(RuntimeIdentifier)' == 'linux-arm64'">libiroh_bindgen.so</RustLibraryFileName>
 
 		<RustTargetTriple Condition="'$(RuntimeIdentifier)' == 'osx-x64'">x86_64-apple-darwin</RustTargetTriple>
 		<RustTargetTriple Condition="'$(RuntimeIdentifier)' == 'osx-arm64'">aarch64-apple-darwin</RustTargetTriple>
-		<RustLibraryFileName Condition="'$(RuntimeIdentifier)' == 'osx-x64'">libiroh.dylib</RustLibraryFileName>
-		<RustLibraryFileName Condition="'$(RuntimeIdentifier)' == 'osx-arm64'">libiroh.dylib</RustLibraryFileName>
+		<RustLibraryFileName Condition="'$(RuntimeIdentifier)' == 'osx-x64'">libiroh_bindgen.dylib</RustLibraryFileName>
+		<RustLibraryFileName Condition="'$(RuntimeIdentifier)' == 'osx-arm64'">libiroh_bindgen.dylib</RustLibraryFileName>
 
 		<RustTargetTriple Condition="'$(RuntimeIdentifier)' == 'iossimulator-x64'">x86_64-apple-ios</RustTargetTriple>
 		<RustTargetTriple Condition="'$(RuntimeIdentifier)' == 'iossimulator-arm64'">aarch64-apple-ios</RustTargetTriple>
 		<RustTargetTriple Condition="'$(RuntimeIdentifier)' == 'ios-arm64'">aarch64-apple-ios</RustTargetTriple>
-		<RustLibraryFileName Condition="'$(RuntimeIdentifier)' == 'iossimulator-x64'">libiroh.dylib</RustLibraryFileName>
-		<RustLibraryFileName Condition="'$(RuntimeIdentifier)' == 'iossimulator-arm64'">libiroh.dylib</RustLibraryFileName>
-		<RustLibraryFileName Condition="'$(RuntimeIdentifier)' == 'ios-arm64'">libiroh.dylib</RustLibraryFileName>
+		<RustLibraryFileName Condition="'$(RuntimeIdentifier)' == 'iossimulator-x64'">libiroh_bindgen.dylib</RustLibraryFileName>
+		<RustLibraryFileName Condition="'$(RuntimeIdentifier)' == 'iossimulator-arm64'">libiroh_bindgen.dylib</RustLibraryFileName>
+		<RustLibraryFileName Condition="'$(RuntimeIdentifier)' == 'ios-arm64'">libiroh_bindgen.dylib</RustLibraryFileName>
 
 		<RustTargetTriple Condition="'$(RuntimeIdentifier)' == 'android-arm64'">aarch64-linux-android</RustTargetTriple>
 		<RustTargetTriple Condition="'$(RuntimeIdentifier)' == 'android-x64'">x86_64-linux-android</RustTargetTriple>
@@ -98,8 +98,8 @@
 		<RustTargetAndroid Condition="'$(RuntimeIdentifier)' == 'android-arm64'">arm64-v8a</RustTargetAndroid>
 		<RustTargetAndroid Condition="'$(RuntimeIdentifier)' == 'android-x64'">x86_64</RustTargetAndroid>
 
-		<RustLibraryFileName Condition="'$(RuntimeIdentifier)' == 'android-arm64'">libiroh.so</RustLibraryFileName>
-		<RustLibraryFileName Condition="'$(RuntimeIdentifier)' == 'android-x64'">libiroh.so</RustLibraryFileName>
+		<RustLibraryFileName Condition="'$(RuntimeIdentifier)' == 'android-arm64'">libiroh_bindgen.so</RustLibraryFileName>
+		<RustLibraryFileName Condition="'$(RuntimeIdentifier)' == 'android-x64'">libiroh_bindgen.so</RustLibraryFileName>
 	</PropertyGroup>
 
 	<ItemGroup>
