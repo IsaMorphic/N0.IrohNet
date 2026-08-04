@@ -5,16 +5,16 @@ using System.Runtime.InteropServices;
 namespace N0.IrohNet
 {
     [GroupedNativeMethods]
-    public static partial class NativeMethods
+    public static partial class iroh
     {
         // https://docs.microsoft.com/en-us/dotnet/standard/native-interop/cross-platform
         // Library path will search
         // win => __DllName, __DllName.dll
         // linux, osx => __DllName.so, __DllName.dylib
 
-        static NativeMethods()
+        static iroh()
         {
-            NativeLibrary.SetDllImportResolver(typeof(NativeMethods).Assembly, DllImportResolver);
+            NativeLibrary.SetDllImportResolver(typeof(iroh).Assembly, DllImportResolver);
         }
 
         static IntPtr DllImportResolver(string libraryName, Assembly assembly, DllImportSearchPath? searchPath)
