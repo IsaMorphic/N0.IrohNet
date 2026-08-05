@@ -1,14 +1,10 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFrameworks Condition="!$(RuntimeIdentifier.StartsWith('android')) And !$(RuntimeIdentifier.StartsWith('ios'))">net10.0</TargetFrameworks>
-		<TargetFrameworks Condition="($(RuntimeIdentifier.StartsWith('android')) Or $(RuntimeIdentifier.StartsWith('ios')) Or '$(RuntimeIdentifier)' == '') And '$([MSBuild]::IsOsPlatform(`Linux`))' == 'false'">net10.0;net10.0-android;net10.0-ios</TargetFrameworks>
-		<TargetFrameworks Condition="($(RuntimeIdentifier.StartsWith('android')) Or $(RuntimeIdentifier.StartsWith('ios')) Or '$(RuntimeIdentifier)' == '') And '$([MSBuild]::IsOsPlatform(`Linux`))' == 'true'">net10.0;net10.0-android</TargetFrameworks>
-		<TargetFrameworks Condition="'$(TargetFramework)' == 'net10.0'">net10.0</TargetFrameworks>
-		<TargetFrameworks Condition="'$(TargetFramework)' == 'net10.0-android'">net10.0-android</TargetFrameworks>
-		<TargetFrameworks Condition="'$(TargetFramework)' == 'net10.0-ios'">net10.0-ios</TargetFrameworks>
-		<RuntimeIdentifiers Condition="'$(TargetFramework)' == 'net10.0-android'">android-arm;android-arm64;android-x64</RuntimeIdentifiers>
-		<RuntimeIdentifiers Condition="'$(TargetFramework)' == 'net10.0-ios'">iossimulator-x64;iossimulator-arm64;ios-arm64</RuntimeIdentifiers>
+		<TargetFramework>net10.0</TargetFramework>
+		<RuntimeIdentifiers Condition="$([MSBuild]::IsOSPlatform('Windows'))">win-x64;win-arm64;android-arm64;android-x64;iossimulator-x64;iossimulator-arm64;ios-arm64</RuntimeIdentifiers>
+		<RuntimeIdentifiers Condition="$([MSBuild]::IsOSPlatform('macOS'))">osx-x64;osx-arm64;android-arm64;android-x64;iossimulator-x64;iossimulator-arm64;ios-arm64</RuntimeIdentifiers>
+		<RuntimeIdentifiers Condition="$([MSBuild]::IsOSPlatform('Linux'))">linux-x64;linux-arm64;android-arm64;android-x64</RuntimeIdentifiers>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
 		<AllowUnsafeBlocks>True</AllowUnsafeBlocks>
@@ -17,17 +13,17 @@
 
 	<PropertyGroup>
 		<IsPackable>true</IsPackable>
-    	<PackageId>N0.IrohNet</PackageId>
-    	<Version>0.101.0</Version>
-    	<Company>N0 Inc.</Company>
-    	<Description>C# .NET bindings for the Iroh library</Description>
-    	<PackageTags>iroh;networking;bindings;native</PackageTags>
-    	<PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<PackageId>N0.IrohNet</PackageId>
+		<Version>0.101.0</Version>
+		<Company>N0 Inc.</Company>
+		<Description>C# .NET bindings for the Iroh library</Description>
+		<PackageTags>iroh;networking;bindings;native</PackageTags>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
-    	<RepositoryUrl>https://github.com/IsaMorphic/N0.IrohNet</RepositoryUrl>
-    	<RepositoryType>git</RepositoryType>
+		<RepositoryUrl>https://github.com/IsaMorphic/N0.IrohNet</RepositoryUrl>
+		<RepositoryType>git</RepositoryType>
 	</PropertyGroup>
-			
+
 
 	<ItemGroup>
 		<Compile Remove="iroh-bindgen\**" />
@@ -86,21 +82,19 @@
 		<RustLibraryFileName Condition="'$(RuntimeIdentifier)' == 'osx-arm64'">libiroh_bindgen.dylib</RustLibraryFileName>
 
 		<RustTargetTriple Condition="'$(RuntimeIdentifier)' == 'iossimulator-x64'">x86_64-apple-ios</RustTargetTriple>
-		<RustTargetTriple Condition="'$(RuntimeIdentifier)' == 'iossimulator-arm64'">aarch64-apple-ios</RustTargetTriple>
+		<RustTargetTriple Condition="'$(RuntimeIdentifier)' == 'iossimulator-arm64'">
+			aarch64-apple-ios</RustTargetTriple>
 		<RustTargetTriple Condition="'$(RuntimeIdentifier)' == 'ios-arm64'">aarch64-apple-ios</RustTargetTriple>
 		<RustLibraryFileName Condition="'$(RuntimeIdentifier)' == 'iossimulator-x64'">libiroh_bindgen.dylib</RustLibraryFileName>
 		<RustLibraryFileName Condition="'$(RuntimeIdentifier)' == 'iossimulator-arm64'">libiroh_bindgen.dylib</RustLibraryFileName>
 		<RustLibraryFileName Condition="'$(RuntimeIdentifier)' == 'ios-arm64'">libiroh_bindgen.dylib</RustLibraryFileName>
 
-		<RustTargetTriple Condition="'$(RuntimeIdentifier)' == 'android-arm'">armv7-linux-androideabi</RustTargetTriple>
 		<RustTargetTriple Condition="'$(RuntimeIdentifier)' == 'android-arm64'">aarch64-linux-android</RustTargetTriple>
 		<RustTargetTriple Condition="'$(RuntimeIdentifier)' == 'android-x64'">x86_64-linux-android</RustTargetTriple>
 
-		<RustTargetAndroid Condition="'$(RuntimeIdentifier)' == 'android-arm'">armeabi-v7a</RustTargetAndroid>
 		<RustTargetAndroid Condition="'$(RuntimeIdentifier)' == 'android-arm64'">arm64-v8a</RustTargetAndroid>
 		<RustTargetAndroid Condition="'$(RuntimeIdentifier)' == 'android-x64'">x86_64</RustTargetAndroid>
 
-		<RustLibraryFileName Condition="'$(RuntimeIdentifier)' == 'android-arm'">libiroh_bindgen.so</RustLibraryFileName>
 		<RustLibraryFileName Condition="'$(RuntimeIdentifier)' == 'android-arm64'">libiroh_bindgen.so</RustLibraryFileName>
 		<RustLibraryFileName Condition="'$(RuntimeIdentifier)' == 'android-x64'">libiroh_bindgen.so</RustLibraryFileName>
 	</PropertyGroup>
