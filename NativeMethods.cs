@@ -57,6 +57,10 @@ namespace N0.IrohNet
                 {
                     path += "arm64";
                 }
+                else if (RuntimeInformation.ProcessArchitecture == Architecture.Arm)
+                {
+                    path += "arm";
+                }
 
                 path += "/native/" + (OperatingSystem.IsWindows() ? "" : "lib") + __DllName + extension;
 
