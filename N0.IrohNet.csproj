@@ -105,6 +105,10 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+		<AndroidNativeLibrary Condition="'$(TargetFramework)' == 'net10.0-android'" Remove="*/**" />
+	</ItemGroup>
+
+	<ItemGroup>
 		<RustTargetOutput Include="iroh-bindgen/target/$(RustTargetTriple)/release/$(RustLibraryFileName)" />
 		<NativeLibs Condition="'$(RuntimeIdentifier)' != ''" Include="runtimes/$(RuntimeIdentifier)/native/$(RustLibraryFileName)" />
 		<None Condition="'$(RuntimeIdentifier)' != ''" Include="@(NativeLibs)" PackagePath="runtimes/$(RuntimeIdentifier)/native">
