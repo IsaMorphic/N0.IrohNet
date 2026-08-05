@@ -82,8 +82,7 @@
 		<RustLibraryFileName Condition="'$(RuntimeIdentifier)' == 'osx-arm64'">libiroh_bindgen.dylib</RustLibraryFileName>
 
 		<RustTargetTriple Condition="'$(RuntimeIdentifier)' == 'iossimulator-x64'">x86_64-apple-ios</RustTargetTriple>
-		<RustTargetTriple Condition="'$(RuntimeIdentifier)' == 'iossimulator-arm64'">
-			aarch64-apple-ios</RustTargetTriple>
+		<RustTargetTriple Condition="'$(RuntimeIdentifier)' == 'iossimulator-arm64'">aarch64-apple-ios</RustTargetTriple>
 		<RustTargetTriple Condition="'$(RuntimeIdentifier)' == 'ios-arm64'">aarch64-apple-ios</RustTargetTriple>
 		<RustLibraryFileName Condition="'$(RuntimeIdentifier)' == 'iossimulator-x64'">libiroh_bindgen.dylib</RustLibraryFileName>
 		<RustLibraryFileName Condition="'$(RuntimeIdentifier)' == 'iossimulator-arm64'">libiroh_bindgen.dylib</RustLibraryFileName>
@@ -98,10 +97,6 @@
 		<RustLibraryFileName Condition="'$(RuntimeIdentifier)' == 'android-arm64'">libiroh_bindgen.so</RustLibraryFileName>
 		<RustLibraryFileName Condition="'$(RuntimeIdentifier)' == 'android-x64'">libiroh_bindgen.so</RustLibraryFileName>
 	</PropertyGroup>
-
-	<ItemGroup>
-		<AndroidNativeLibrary Condition="'$(TargetFramework)' == 'net10.0-android'" Remove="*/**" />
-	</ItemGroup>
 
 	<ItemGroup>
 		<RustTargetOutput Include="iroh-bindgen/target/$(RustTargetTriple)/release/$(RustLibraryFileName)" />
