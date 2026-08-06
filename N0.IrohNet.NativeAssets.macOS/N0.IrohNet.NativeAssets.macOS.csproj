@@ -1,0 +1,59 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net10.0-macos</TargetFramework>
+		<RuntimeIdentifiers>osx-x64;osx-arm64</RuntimeIdentifiers>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+		<AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+		<OutputType>Library</OutputType>
+	</PropertyGroup>
+
+	<PropertyGroup>
+		<IsPackable>true</IsPackable>
+		<PackageId>N0.IrohNet.NativeAssets.macOS</PackageId>
+		<Company>N0 Inc.</Company>
+		<Description>C# .NET bindings for the Iroh library</Description>
+		<PackageTags>iroh;networking;bindings;native</PackageTags>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<RepositoryUrl>https://github.com/IsaMorphic/N0.IrohNet</RepositoryUrl>
+		<RepositoryType>git</RepositoryType>
+	</PropertyGroup>
+
+
+	<ItemGroup>
+		<Compile Remove="runtimes/**" />
+		<EmbeddedResource Remove="runtimes/**" />
+		<None Remove="runtimes/**" />
+	</ItemGroup>
+
+	<PropertyGroup>
+		<RustTargetTriple Condition="'$(RuntimeIdentifier)' == 'osx-x64'">x86_64-apple-darwin</RustTargetTriple>
+		<RustTargetTriple Condition="'$(RuntimeIdentifier)' == 'osx-arm64'">aarch64-apple-darwin</RustTargetTriple>
+		<RustLibraryFileName Condition="'$(RuntimeIdentifier)' == 'osx-x64'">libiroh_bindgen.dylib</RustLibraryFileName>
+		<RustLibraryFileName Condition="'$(RuntimeIdentifier)' == 'osx-arm64'">libiroh_bindgen.dylib</RustLibraryFileName>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<RustTargetOutput Include="../iroh-bindgen/target/$(RustTargetTriple)/release/$(RustLibraryFileName)" />
+		<NativeLibs Include="runtimes/**" />
+		<None Include="@(NativeLibs)" PackagePath="runtimes/">
+			<Pack>true</Pack>
+			<PackageCopyToOutput>true</PackageCopyToOutput>
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="MinVer" Version="7.0.0">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+	</ItemGroup>
+
+	<Target Condition="'$(RuntimeIdentifier)' != ''" Name="rustc" BeforeTargets="PreBuildEvent">
+		<Exec WorkingDirectory="../iroh-bindgen" Command="cargo build --target $(RustTargetTriple) --profile release" />
+
+		<Copy SourceFiles="@(RustTargetOutput)" DestinationFolder="runtimes/$(RuntimeIdentifier)/native" />
+	</Target>
+</Project>

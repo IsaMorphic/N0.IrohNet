@@ -1,31 +1,17 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('Linux'))">net10.0;net10.0-android</TargetFrameworks>
-		<TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('Windows'))">net10.0;net10.0-windows;net10.0-android;net10.0-ios</TargetFrameworks>
-		<TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('OSX'))">net10.0;net10.0-macos;net10.0-android;net10.0-ios</TargetFrameworks>
-
-		<TargetFrameworks Condition="$(RuntimeIdentifier.StartsWith('linux'))">net10.0</TargetFrameworks>
-		<TargetFrameworks Condition="$(RuntimeIdentifier.StartsWith('win'))">net10.0-windows</TargetFrameworks>
-		<TargetFrameworks Condition="$(RuntimeIdentifier.StartsWith('osx'))">net10.0-macos</TargetFrameworks>
-		<TargetFrameworks Condition="$(RuntimeIdentifier.StartsWith('android'))">net10.0-android</TargetFrameworks>
-		<TargetFrameworks Condition="$(RuntimeIdentifier.StartsWith('ios'))">net10.0-ios</TargetFrameworks>
-		
-		<RuntimeIdentifiers Condition="'$(TargetFramework)' == 'net10.0-windows'">win-x64;win-arm64</RuntimeIdentifiers>
-		<RuntimeIdentifiers Condition="'$(TargetFramework)' == 'net10.0-macos'">osx-x64;osx-arm64</RuntimeIdentifiers>
-		<RuntimeIdentifiers Condition="'$(TargetFramework)' == 'net10.0-android'">android-x64;android-arm64</RuntimeIdentifiers>
-		<RuntimeIdentifiers Condition="'$(TargetFramework)' == 'net10.0-ios'">iossimulator-x64;iossimulator-arm64;ios-arm64</RuntimeIdentifiers>
-
+		<TargetFrameworks>net10.0;net10.0-windows;net10.0-macos;net10.0-android;net10.0-ios</TargetFrameworks>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
 		<AllowUnsafeBlocks>True</AllowUnsafeBlocks>
 		<OutputType>Library</OutputType>
+		<MinVerDefaultPreReleaseIdentifiers>preview.0</MinVerDefaultPreReleaseIdentifiers>
 	</PropertyGroup>
 
 	<PropertyGroup>
 		<IsPackable>true</IsPackable>
 		<PackageId>N0.IrohNet</PackageId>
-		<Version>0.101.0</Version>
 		<Company>N0 Inc.</Company>
 		<Description>C# .NET bindings for the Iroh library</Description>
 		<PackageTags>iroh;networking;bindings;native</PackageTags>
@@ -34,15 +20,6 @@
 		<RepositoryUrl>https://github.com/IsaMorphic/N0.IrohNet</RepositoryUrl>
 		<RepositoryType>git</RepositoryType>
 	</PropertyGroup>
-
-
-	<ItemGroup>
-		<Compile Remove="runtimes/**" />
-
-		<EmbeddedResource Remove="runtimes/**" />
-
-		<None Remove="runtimes/**" />
-	</ItemGroup>
 
 	<ItemGroup>
 		<None Include="../LICENSE.txt" Pack="true" PackagePath="/" />
@@ -59,62 +36,22 @@
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
-	</ItemGroup>
-
-	<PropertyGroup>
-		<RustTargetTriple Condition="'$(RuntimeIdentifier)' == 'win-x64'">x86_64-pc-windows-msvc</RustTargetTriple>
-		<RustTargetTriple Condition="'$(RuntimeIdentifier)' == 'win-arm64'">aarch64-pc-windows-msvc</RustTargetTriple>
-		<RustLibraryFileName Condition="'$(RuntimeIdentifier)' == 'win-x64'">iroh_bindgen.dll</RustLibraryFileName>
-		<RustLibraryFileName Condition="'$(RuntimeIdentifier)' == 'win-arm64'">iroh_bindgen.dll</RustLibraryFileName>
-
-		<RustTargetTriple Condition="'$(RuntimeIdentifier)' == 'linux-x64'">x86_64-unknown-linux-gnu</RustTargetTriple>
-		<RustTargetTriple Condition="'$(RuntimeIdentifier)' == 'linux-arm64'">aarch64-unknown-linux-gnu</RustTargetTriple>
-		<RustLibraryFileName Condition="'$(RuntimeIdentifier)' == 'linux-x64'">libiroh_bindgen.so</RustLibraryFileName>
-		<RustLibraryFileName Condition="'$(RuntimeIdentifier)' == 'linux-arm64'">libiroh_bindgen.so</RustLibraryFileName>
-
-		<RustTargetTriple Condition="'$(RuntimeIdentifier)' == 'osx-x64'">x86_64-apple-darwin</RustTargetTriple>
-		<RustTargetTriple Condition="'$(RuntimeIdentifier)' == 'osx-arm64'">aarch64-apple-darwin</RustTargetTriple>
-		<RustLibraryFileName Condition="'$(RuntimeIdentifier)' == 'osx-x64'">libiroh_bindgen.dylib</RustLibraryFileName>
-		<RustLibraryFileName Condition="'$(RuntimeIdentifier)' == 'osx-arm64'">libiroh_bindgen.dylib</RustLibraryFileName>
-
-		<RustTargetTriple Condition="'$(RuntimeIdentifier)' == 'iossimulator-x64'">x86_64-apple-ios</RustTargetTriple>
-		<RustTargetTriple Condition="'$(RuntimeIdentifier)' == 'iossimulator-arm64'">aarch64-apple-ios</RustTargetTriple>
-		<RustTargetTriple Condition="'$(RuntimeIdentifier)' == 'ios-arm64'">aarch64-apple-ios</RustTargetTriple>
-		<RustLibraryFileName Condition="'$(RuntimeIdentifier)' == 'iossimulator-x64'">libiroh_bindgen.dylib</RustLibraryFileName>
-		<RustLibraryFileName Condition="'$(RuntimeIdentifier)' == 'iossimulator-arm64'">libiroh_bindgen.dylib</RustLibraryFileName>
-		<RustLibraryFileName Condition="'$(RuntimeIdentifier)' == 'ios-arm64'">libiroh_bindgen.dylib</RustLibraryFileName>
-
-		<RustTargetTriple Condition="'$(RuntimeIdentifier)' == 'android-arm64'">aarch64-linux-android</RustTargetTriple>
-		<RustTargetTriple Condition="'$(RuntimeIdentifier)' == 'android-x64'">x86_64-linux-android</RustTargetTriple>
-
-		<RustTargetAndroid Condition="'$(RuntimeIdentifier)' == 'android-arm64'">arm64-v8a</RustTargetAndroid>
-		<RustTargetAndroid Condition="'$(RuntimeIdentifier)' == 'android-x64'">x86_64</RustTargetAndroid>
-
-		<RustLibraryFileName Condition="'$(RuntimeIdentifier)' == 'android-arm64'">libiroh_bindgen.so</RustLibraryFileName>
-		<RustLibraryFileName Condition="'$(RuntimeIdentifier)' == 'android-x64'">libiroh_bindgen.so</RustLibraryFileName>
-	</PropertyGroup>
-
-	<ItemGroup>
-		<AndroidNativeLibrary Condition="'$(TargetFramework)' == 'net10.0-android'" Remove="*/**" />
+		<PackageReference Include="MinVer" Version="7.0.0">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
 	</ItemGroup>
 
 	<ItemGroup>
-		<RustTargetOutput Include="iroh-bindgen/target/$(RustTargetTriple)/release/$(RustLibraryFileName)" />
-		<NativeLibs Condition="'$(RuntimeIdentifier)' != ''" Include="runtimes/$(RuntimeIdentifier)/native/$(RustLibraryFileName)" />
-		<None Condition="'$(RuntimeIdentifier)' != ''" Include="@(NativeLibs)" PackagePath="runtimes/$(RuntimeIdentifier)/native">
-			<Pack>true</Pack>
-			<PackageCopyToOutput>true</PackageCopyToOutput>
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</None>
+		<PackageReference Condition="'$(TargetFramework)' == 'net10.0'"
+			Include="N0.IrohNet.NativeAssets.Linux" Version="$(MinVerVersion)" />
+		<PackageReference Condition="'$(TargetFramework)' == 'net10.0'"
+			Include="N0.IrohNet.NativeAssets.macOS" Version="$(MinVerVersion)" />
+		<PackageReference Condition="'$(TargetFramework)' == 'net10.0'"
+			Include="N0.IrohNet.NativeAssets.Win32" Version="$(MinVerVersion)" />
+		<PackageReference Condition="'$(TargetFramework)' == 'net10.0-windows'"
+			Include="N0.IrohNet.NativeAssets.Win32" Version="$(MinVerVersion)" />
+		<PackageReference Condition="'$(TargetFramework)' == 'net10.0-macos'"
+			Include="N0.IrohNet.NativeAssets.macOS" Version="$(MinVerVersion)" />
 	</ItemGroup>
-
-	<Target Condition="'$(RuntimeIdentifier)' != ''" Name="rustc" BeforeTargets="PreBuildEvent">
-		<!--NON-ANDROID RUST BUILD-->
-		<Exec WorkingDirectory="iroh-bindgen" Condition="!$(RuntimeIdentifier.StartsWith('android'))" Command="cargo build --target $(RustTargetTriple) --profile release" />
-
-		<!--ANDROID RUST BUILD-->
-		<Exec WorkingDirectory="iroh-bindgen" Condition="$(RuntimeIdentifier.StartsWith('android'))" Command="cargo ndk -t $(RustTargetAndroid) -- build --profile release" />
-
-		<Copy SourceFiles="@(RustTargetOutput)" DestinationFolder="runtimes/$(RuntimeIdentifier)/native" />
-	</Target>
 </Project>
