@@ -11,7 +11,7 @@ jobs:
   publish:
     strategy:
       matrix:
-        os: ['ubuntu-latest', 'windows-latest', 'macos-latest']
+        os: [ubuntu-latest, windows-latest, macos-latest]
     runs-on: ${{ matrix.os }}
     permissions:
       contents: write
@@ -19,10 +19,10 @@ jobs:
     env:
       RUNTIME_ID_OS: |-
         ${{ case(
-        matrix.os == 'ubuntu-latest', 'linux',
-        matrix.os == 'windows-latest', 'win',
-        matrix.os == 'macos-latest', 'osx',
-        'unknown'
+          matrix.os == 'ubuntu-latest', 'linux',
+          matrix.os == 'windows-latest', 'win',
+          matrix.os == 'macos-latest', 'osx',
+          'unknown'
         ) }}
       PACKAGE_ID_OS: |-
         ${{ case(
