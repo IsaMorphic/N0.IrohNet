@@ -1,0 +1,57 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFrameworks>net10.0;net10.0-windows;net10.0-macos;net10.0-android;net10.0-ios</TargetFrameworks>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+		<AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+		<OutputType>Library</OutputType>
+		<MinVerDefaultPreReleaseIdentifiers>preview.0</MinVerDefaultPreReleaseIdentifiers>
+	</PropertyGroup>
+
+	<PropertyGroup>
+		<IsPackable>true</IsPackable>
+		<PackageId>N0.IrohNet</PackageId>
+		<Company>N0 Inc.</Company>
+		<Description>C# .NET bindings for the Iroh library</Description>
+		<PackageTags>iroh;networking;bindings;native</PackageTags>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
+		<RepositoryUrl>https://github.com/IsaMorphic/N0.IrohNet</RepositoryUrl>
+		<RepositoryType>git</RepositoryType>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<None Include="../LICENSE.txt" Pack="true" PackagePath="/" />
+		<None Include="../README.md" Pack="true" PackagePath="/" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Compile Remove="NativeMethods.g.cs" />
+		<Compile Include="NativeMethods.g.cs" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="csbindgen" Version="1.9.8">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+		<PackageReference Include="MinVer" Version="7.0.0">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Condition="'$(TargetFramework)' == 'net10.0'"
+			Include="N0.IrohNet.NativeAssets.Linux" Version="$(MinVerVersion)" />
+		<PackageReference Condition="'$(TargetFramework)' == 'net10.0'"
+			Include="N0.IrohNet.NativeAssets.macOS" Version="$(MinVerVersion)" />
+		<PackageReference Condition="'$(TargetFramework)' == 'net10.0'"
+			Include="N0.IrohNet.NativeAssets.Win32" Version="$(MinVerVersion)" />
+		<PackageReference Condition="'$(TargetFramework)' == 'net10.0-windows'"
+			Include="N0.IrohNet.NativeAssets.Win32" Version="$(MinVerVersion)" />
+		<PackageReference Condition="'$(TargetFramework)' == 'net10.0-macos'"
+			Include="N0.IrohNet.NativeAssets.macOS" Version="$(MinVerVersion)" />
+	</ItemGroup>
+</Project>
