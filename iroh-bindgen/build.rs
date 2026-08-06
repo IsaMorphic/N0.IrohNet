@@ -17,7 +17,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         .csharp_namespace("N0.IrohNet")
         .csharp_class_accessibility("public")
         .csharp_class_name("iroh")
-        .generate_to_file("src/iroh_ffi.rs", "../NativeMethods.g.cs")
+        .generate_to_file("src/iroh_ffi.rs", "../N0.IrohNet/NativeMethods.g.cs")
         .unwrap();
 
     Ok(())

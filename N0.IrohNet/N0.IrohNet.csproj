@@ -37,17 +37,11 @@
 
 
 	<ItemGroup>
-		<Compile Remove="iroh-bindgen\**" />
-		<Compile Remove="iroh-c-ffi\**" />
-		<Compile Remove="runtimes\**" />
+		<Compile Remove="runtimes/**" />
 
-		<EmbeddedResource Remove="iroh-bindgen\**" />
-		<EmbeddedResource Remove="iroh-c-ffi\**" />
-		<EmbeddedResource Remove="runtimes\**" />
+		<EmbeddedResource Remove="runtimes/**" />
 
-		<None Remove="iroh-bindgen\**" />
-		<None Remove="iroh-c-ffi\**" />
-		<None Remove="runtimes\**" />
+		<None Remove="runtimes/**" />
 	</ItemGroup>
 
 	<ItemGroup>
