@@ -29,28 +29,19 @@
 		<Compile Remove="iroh-bindgen\**" />
 		<Compile Remove="iroh-c-ffi\**" />
 		<Compile Remove="runtimes\**" />
-		<Compile Remove="*.git*" />
 
 		<EmbeddedResource Remove="iroh-bindgen\**" />
 		<EmbeddedResource Remove="iroh-c-ffi\**" />
 		<EmbeddedResource Remove="runtimes\**" />
-		<EmbeddedResource Remove="*.git*" />
 
 		<None Remove="iroh-bindgen\**" />
 		<None Remove="iroh-c-ffi\**" />
 		<None Remove="runtimes\**" />
-		<None Remove="*.git*" />
 	</ItemGroup>
 
 	<ItemGroup>
-		<Compile Remove="LICENSE.txt" />
-		<Compile Remove="README.md" />
-
-		<EmbeddedResource Remove="LICENSE.txt" />
-		<EmbeddedResource Remove="README.md" />
-
-		<None Include="LICENSE.txt" Pack="true" PackagePath="/" />
-		<None Include="README.md" Pack="true" PackagePath="/" />
+		<None Include="../LICENSE.txt" Pack="true" PackagePath="/" />
+		<None Include="../README.md" Pack="true" PackagePath="/" />
 	</ItemGroup>
 
 	<ItemGroup>
