@@ -1,10 +1,21 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFramework>net10.0</TargetFramework>
-		<RuntimeIdentifiers Condition="$([MSBuild]::IsOSPlatform('Windows'))">win-x64;win-arm64;android-arm64;android-x64;iossimulator-x64;iossimulator-arm64;ios-arm64</RuntimeIdentifiers>
-		<RuntimeIdentifiers Condition="$([MSBuild]::IsOSPlatform('macOS'))">osx-x64;osx-arm64;android-arm64;android-x64;iossimulator-x64;iossimulator-arm64;ios-arm64</RuntimeIdentifiers>
-		<RuntimeIdentifiers Condition="$([MSBuild]::IsOSPlatform('Linux'))">linux-x64;linux-arm64;android-arm64;android-x64</RuntimeIdentifiers>
+		<TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('Linux'))">net10.0;net10.0-android</TargetFrameworks>
+		<TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('Windows'))">net10.0;net10.0-windows;net10.0-android;net10.0-ios</TargetFrameworks>
+		<TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('OSX'))">net10.0;net10.0-macos;net10.0-android;net10.0-ios</TargetFrameworks>
+
+		<TargetFrameworks Condition="$(RuntimeIdentifier.StartsWith('linux'))">net10.0</TargetFrameworks>
+		<TargetFrameworks Condition="$(RuntimeIdentifier.StartsWith('win'))">net10.0-windows</TargetFrameworks>
+		<TargetFrameworks Condition="$(RuntimeIdentifier.StartsWith('osx'))">net10.0-macos</TargetFrameworks>
+		<TargetFrameworks Condition="$(RuntimeIdentifier.StartsWith('android'))">net10.0-android</TargetFrameworks>
+		<TargetFrameworks Condition="$(RuntimeIdentifier.StartsWith('ios'))">net10.0-ios</TargetFrameworks>
+		
+		<RuntimeIdentifiers Condition="'$(TargetFramework)' == 'net10.0-windows'">win-x64;win-arm64</RuntimeIdentifiers>
+		<RuntimeIdentifiers Condition="'$(TargetFramework)' == 'net10.0-macos'">osx-x64;osx-arm64</RuntimeIdentifiers>
+		<RuntimeIdentifiers Condition="'$(TargetFramework)' == 'net10.0-android'">android-x64;android-arm64</RuntimeIdentifiers>
+		<RuntimeIdentifiers Condition="'$(TargetFramework)' == 'net10.0-ios'">iossimulator-x64;iossimulator-arm64;ios-arm64</RuntimeIdentifiers>
+
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
 		<AllowUnsafeBlocks>True</AllowUnsafeBlocks>
@@ -88,6 +99,10 @@
 		<RustLibraryFileName Condition="'$(RuntimeIdentifier)' == 'android-arm64'">libiroh_bindgen.so</RustLibraryFileName>
 		<RustLibraryFileName Condition="'$(RuntimeIdentifier)' == 'android-x64'">libiroh_bindgen.so</RustLibraryFileName>
 	</PropertyGroup>
+
+	<ItemGroup>
+		<AndroidNativeLibrary Condition="'$(TargetFramework)' == 'net10.0-android'" Remove="*/**" />
+	</ItemGroup>
 
 	<ItemGroup>
 		<RustTargetOutput Include="iroh-bindgen/target/$(RustTargetTriple)/release/$(RustLibraryFileName)" />
