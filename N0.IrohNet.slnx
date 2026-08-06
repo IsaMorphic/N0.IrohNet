@@ -1,4 +1,6 @@
 <Solution>
+  <Project Path="N0.IrohNet.NativeAssets.Android/N0.IrohNet.NativeAssets.Android.csproj" />
+  <Project Path="N0.IrohNet.NativeAssets.iOS/N0.IrohNet.NativeAssets.iOS.csproj" />
   <Project Path="N0.IrohNet.NativeAssets.Linux/N0.IrohNet.NativeAssets.Linux.csproj" />
   <Project Path="N0.IrohNet.NativeAssets.macOS/N0.IrohNet.NativeAssets.macOS.csproj" />
   <Project Path="N0.IrohNet.NativeAssets.Win32/N0.IrohNet.NativeAssets.Win32.csproj" />

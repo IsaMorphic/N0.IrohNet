@@ -53,5 +53,9 @@
 			Include="../N0.IrohNet.NativeAssets.Win32/N0.IrohNet.NativeAssets.Win32.csproj" />
 		<ProjectReference Condition="'$(TargetFramework)' == 'net10.0-macos'"
 			Include="../N0.IrohNet.NativeAssets.macOS/N0.IrohNet.NativeAssets.macOS.csproj" />
+		<ProjectReference Condition="'$(TargetFramework)' == 'net10.0-android'"
+			Include="../N0.IrohNet.NativeAssets.Android/N0.IrohNet.NativeAssets.Android.csproj" />
+		<ProjectReference Condition="'$(TargetFramework)' == 'net10.0-ios'"
+			Include="../N0.IrohNet.NativeAssets.iOS/N0.IrohNet.NativeAssets.iOS.csproj" />
 	</ItemGroup>
 </Project>
