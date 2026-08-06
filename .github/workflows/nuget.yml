@@ -56,8 +56,3 @@ jobs:
           user: ${{ secrets.NUGET_USERNAME }}
       - name: Publish to NuGet
         run: dotnet nuget push --api-key ${{ steps.login.outputs.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json build/**/*.nupkg --skip-duplicate
-      - name: Create new release
-        uses: ncipollo/release-action@v1
-        with:
-          artifacts: build/**/*.nupkg
-          generateReleaseNotes: true
