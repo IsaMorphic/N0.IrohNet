@@ -43,15 +43,15 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Condition="'$(TargetFramework)' == 'net10.0'"
-			Include="N0.IrohNet.NativeAssets.Linux" Version="0.*" />
-		<PackageReference Condition="'$(TargetFramework)' == 'net10.0'"
-			Include="N0.IrohNet.NativeAssets.macOS" Version="0.*" />
-		<PackageReference Condition="'$(TargetFramework)' == 'net10.0'"
-			Include="N0.IrohNet.NativeAssets.Win32" Version="0.*" />
-		<PackageReference Condition="'$(TargetFramework)' == 'net10.0-windows'"
-			Include="N0.IrohNet.NativeAssets.Win32" Version="0.*" />
-		<PackageReference Condition="'$(TargetFramework)' == 'net10.0-macos'"
-			Include="N0.IrohNet.NativeAssets.macOS" Version="0.*" />
+		<ProjectReference Condition="'$(TargetFramework)' == 'net10.0'"
+			Include="../N0.IrohNet.NativeAssets.Linux/N0.IrohNet.NativeAssets.Linux.csproj" />
+		<ProjectReference Condition="'$(TargetFramework)' == 'net10.0'"
+			Include="../N0.IrohNet.NativeAssets.macOS/N0.IrohNet.NativeAssets.macOS.csproj" />
+		<ProjectReference Condition="'$(TargetFramework)' == 'net10.0'"
+			Include="../N0.IrohNet.NativeAssets.Win32/N0.IrohNet.NativeAssets.Win32.csproj" />
+		<ProjectReference Condition="'$(TargetFramework)' == 'net10.0-windows'"
+			Include="../N0.IrohNet.NativeAssets.Win32/N0.IrohNet.NativeAssets.Win32.csproj" />
+		<ProjectReference Condition="'$(TargetFramework)' == 'net10.0-macos'"
+			Include="../N0.IrohNet.NativeAssets.macOS/N0.IrohNet.NativeAssets.macOS.csproj" />
 	</ItemGroup>
 </Project>

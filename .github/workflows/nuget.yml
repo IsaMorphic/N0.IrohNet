@@ -1,0 +1,63 @@
+# This workflow will build a .NET project
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-net
+
+name: NuGet
+
+on:
+  push:
+    tags: ["*"]
+
+jobs:
+  publish:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    permissions:
+      contents: write
+      id-token: write
+    env:
+      RUNTIME_ID_OS: |-
+        ${{ case(
+        matrix.os == 'ubuntu-latest', 'linux',
+        matrix.os == 'windows-latest', 'win',
+        matrix.os == 'macos-latest', 'osx',
+        'unknown'
+        ) }}
+      PACKAGE_ID_OS: |-
+        ${{ case(
+        matrix.os == 'ubuntu-latest', 'Linux',
+        matrix.os == 'windows-latest', 'Win32',
+        matrix.os == 'macos-latest', 'macOS',
+        'unknown'
+        ) }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+      - name: Install cross-compilation tools
+        if: matrix.os == 'ubuntu-latest'
+        run: cargo install cross
+      - name: Build for ${{ env.PACKAGE_ID_OS }} (x64)
+        run: dotnet build --runtime ${{ env.RUNTIME_ID_OS }}-x64
+      - name: Build for ${{ env.PACKAGE_ID_OS }} (ARM64)
+        run: dotnet build --runtime ${{ env.RUNTIME_ID_OS }}-arm64
+      - name: Create NuGet package (native)
+        run: dotnet pack N0.IrohNet.NativeAssets.${{ env.PACKAGE_ID_OS }} --output build/
+      - name: Create NuGet package (managed)
+        if: matrix.os == 'ubuntu-latest'
+        run: dotnet pack N0.IrohNet --output build/
+      - name: NuGet login (OIDC → temp API key)
+        uses: NuGet/login@v1
+        id: login
+        with:
+          user: ${{ secrets.NUGET_USERNAME }}
+      - name: Publish to NuGet
+        run: dotnet nuget push --api-key ${{ steps.login.outputs.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json build/**/*.nupkg --skip-duplicate
+      - name: Create new release
+        uses: ncipollo/release-action@v1
+        with:
+          artifacts: build/**/*.nupkg
+          generateReleaseNotes: true
