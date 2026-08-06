@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFramework>net10.0-macos</TargetFramework>
+		<TargetFrameworks>net10.0;net10.0-macos</TargetFrameworks>
 		<RuntimeIdentifiers>osx-x64;osx-arm64</RuntimeIdentifiers>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
