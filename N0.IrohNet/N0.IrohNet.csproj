@@ -44,14 +44,14 @@
 
 	<ItemGroup>
 		<PackageReference Condition="'$(TargetFramework)' == 'net10.0'"
-			Include="N0.IrohNet.NativeAssets.Linux" Version="$(MinVerVersion)" />
+			Include="N0.IrohNet.NativeAssets.Linux" Version="0.*" />
 		<PackageReference Condition="'$(TargetFramework)' == 'net10.0'"
-			Include="N0.IrohNet.NativeAssets.macOS" Version="$(MinVerVersion)" />
+			Include="N0.IrohNet.NativeAssets.macOS" Version="0.*" />
 		<PackageReference Condition="'$(TargetFramework)' == 'net10.0'"
-			Include="N0.IrohNet.NativeAssets.Win32" Version="$(MinVerVersion)" />
+			Include="N0.IrohNet.NativeAssets.Win32" Version="0.*" />
 		<PackageReference Condition="'$(TargetFramework)' == 'net10.0-windows'"
-			Include="N0.IrohNet.NativeAssets.Win32" Version="$(MinVerVersion)" />
+			Include="N0.IrohNet.NativeAssets.Win32" Version="0.*" />
 		<PackageReference Condition="'$(TargetFramework)' == 'net10.0-macos'"
-			Include="N0.IrohNet.NativeAssets.macOS" Version="$(MinVerVersion)" />
+			Include="N0.IrohNet.NativeAssets.macOS" Version="0.*" />
 	</ItemGroup>
 </Project>
