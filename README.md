@@ -1,10 +1,10 @@
 # Iroh.NET
 
-This repository hosts unofficial C# .NET bindings for the [Iroh library](https://iroh.computer/) by [N0 Inc.](https://n0.computer/) The project uses [CySharp's csbindgen](https://github.com/CySharp/csbindgen) library to create a shim using Iroh's C FFI bindings that can be used directly in .NET code via traditional interop. 
+This repository hosts unofficial C# .NET bindings for the [iroh library](https://iroh.computer/) by [N0 Inc.](https://n0.computer/) The project uses [CySharp's csbindgen](https://github.com/CySharp/csbindgen) library to create a shim using iroh's C FFI bindings that can be used directly in .NET code via traditional interop. 
 
 # How to Use
 
-At the moment, this project does not publish any NuGet packages and must be compiled locally as a dependency to your project. To make this easier, users can add this repository as a submodule for use directly as a project in a solution. 
+This repository publishes a series of NuGet packages via GitHub Actions. Simply install `N0.IrohNet` into your project from NuGet to get started! The instructions below detail how to build these bindings locally on your machine. 
 
 ## Prerequisites
 

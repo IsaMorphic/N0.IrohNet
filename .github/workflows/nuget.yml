@@ -26,10 +26,10 @@ jobs:
         ) }}
       PACKAGE_ID_OS: |-
         ${{ case(
-        matrix.os == 'ubuntu-latest', 'Linux',
-        matrix.os == 'windows-latest', 'Win32',
-        matrix.os == 'macos-latest', 'macOS',
-        'unknown'
+          matrix.os == 'ubuntu-latest', 'Linux',
+          matrix.os == 'windows-latest', 'Win32',
+          matrix.os == 'macos-latest', 'macOS',
+          'unknown'
         ) }}
     steps:
       - uses: actions/checkout@v4
