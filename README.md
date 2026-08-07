@@ -1,10 +1,12 @@
 # Iroh.NET
 
+[![NuGet](https://github.com/IsaMorphic/N0.IrohNet/actions/workflows/nuget.yml/badge.svg)](https://github.com/IsaMorphic/N0.IrohNet/actions/workflows/nuget.yml)
+
 This repository hosts unofficial C# .NET bindings for the [iroh library](https://iroh.computer/) by [N0 Inc.](https://n0.computer/) The project uses [CySharp's csbindgen](https://github.com/CySharp/csbindgen) library to create a shim using iroh's C FFI bindings that can be used directly in .NET code via traditional interop. 
 
 # How to Use
 
-This repository publishes a series of NuGet packages via GitHub Actions. Simply install `N0.IrohNet` into your project from NuGet to get started! The instructions below detail how to build these bindings locally on your machine. 
+This repository publishes a series of NuGet packages via GitHub Actions. Simply install [N0.IrohNet](https://www.nuget.org/packages/N0.IrohNet) into your project from NuGet to get started! The instructions below detail how to build these bindings locally on your machine. 
 
 ## Prerequisites
 
@@ -17,6 +19,12 @@ To build Iroh.NET locally, your development environment needs the following tool
 3. [Git](https://git-scm.com/install/)
 
 **Optional (for targeting other platforms):**
+
+Linux
+
+1. [Podman](https://podman.io/docs/installation)
+
+2. [`cargo-cross`](https://github.com/zijiren233/cargo-cross)
 
 Android
 
@@ -55,11 +63,11 @@ These bindings will automatically compile the necessary native dependencies usin
 
 ### For Mobile Development (Android)
 
-For native Android builds, one must ensure that `cargo-ndk` is installed in a Linux-based development machine. WSL works just fine for Windows users. Then, ensure that Android Studio is installed within that environment and add an older NDK version (r29 works just fine). Afterwards, make sure to use `rustup` to add the appropriate target architectures for Android platforms. Then simply pass an Android RID to `dotnet build`.
+For native Android builds, one must ensure that `cargo-ndk` is installed in a Linux-based development machine. WSL works just fine for Windows users. Then, ensure that Android Studio is installed within that environment and add an older NDK version (r29 works just fine). Then simply pass an Android RID to `dotnet build`.
 
 ### For Mobile Development (iOS)
 
-For native iOS builds, ensure that XCode is installed on your macOS build machine, along with the current version of XCode Command-line Tools and the most recent iOS SDK. Next, use `rustup` to add iOS targets to `rustc`. Then simply pass an `ios` or `iossimulator` RID to `dotnet build`.
+For native iOS builds, ensure that XCode is installed on your macOS build machine, along with the current version of XCode Command-line Tools and the most recent iOS SDK. Then simply pass an `ios` or `iossimulator` RID to `dotnet build`.
 
 ## Updating the Bindings
 
