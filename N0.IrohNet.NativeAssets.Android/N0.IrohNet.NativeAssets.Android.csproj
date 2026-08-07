@@ -29,7 +29,7 @@
 
 	<PropertyGroup>
 		<RustTargetTriple Condition="'$(RuntimeIdentifier)' == 'android-arm64'">aarch64-linux-android</RustTargetTriple>
-		<RustTargetTriple Condition="'$(RuntimeIdentifier)' == 'android-arm'">arm-linux-androideabi</RustTargetTriple>
+		<RustTargetTriple Condition="'$(RuntimeIdentifier)' == 'android-arm'">armv7-linux-androideabi</RustTargetTriple>
 		<RustTargetTriple Condition="'$(RuntimeIdentifier)' == 'android-x64'">x86_64-linux-android</RustTargetTriple>
 		<RustTargetAndroid Condition="'$(RuntimeIdentifier)' == 'android-arm64'">arm64-v8a</RustTargetAndroid>
 		<RustTargetAndroid Condition="'$(RuntimeIdentifier)' == 'android-arm'">armeabi-v7a</RustTargetAndroid>
