@@ -105,7 +105,7 @@ jobs:
           link-to-sdk: true
       - name: Install cross-compilation tools
         if: matrix.os == 'ubuntu-latest'
-        run: cargo binstall cargo-ndk
+        run: cargo install cargo-ndk
       - name: Restore workloads
         run: dotnet workload restore
       - name: Build for x64
