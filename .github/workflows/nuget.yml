@@ -105,11 +105,14 @@ jobs:
         run: dotnet workload restore
       - name: Build for x64
         run: dotnet build N0.IrohNet.NativeAssets.${{ env.PACKAGE_ID_OS }} --runtime ${{ env.RUNTIME_ID_OS }}-x64
+      - name: Build for ARM
+        if: matrix.os == 'ubuntu-latest'
+        run: dotnet build N0.IrohNet.NativeAssets.${{ env.PACKAGE_ID_OS }} --runtime ${{ env.RUNTIME_ID_OS }}-arm
       - name: Build for ARM64
         run: dotnet build N0.IrohNet.NativeAssets.${{ env.PACKAGE_ID_OS }} --runtime ${{ env.RUNTIME_ID_OS }}-arm64
       - name: Build for ARM64 (Device)
         if: matrix.os == 'macos-latest'
-        run: dotnet build N0.IrohNet.NativeAssets.iOS --runtime ios-arm64
+        run: dotnet build N0.IrohNet.NativeAssets.${{ env.PACKAGE_ID_OS }} --runtime ios-arm64
       - name: Create NuGet package (native)
         run: dotnet pack N0.IrohNet.NativeAssets.${{ env.PACKAGE_ID_OS }} --output build/
       - name: NuGet login (OIDC → temp API key)
