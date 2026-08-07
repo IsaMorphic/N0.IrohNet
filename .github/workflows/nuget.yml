@@ -51,7 +51,7 @@ jobs:
       - name: Create NuGet package (native)
         run: dotnet pack N0.IrohNet.NativeAssets.${{ env.PACKAGE_ID_OS }} --output build/
       - name: Create NuGet package (managed)
-        if: matrix.os == 'ubuntu-latest'
+        if: matrix.os == 'windows-latest'
         run: dotnet pack N0.IrohNet --output build/
       - name: NuGet login (OIDC → temp API key)
         uses: NuGet/login@v1
