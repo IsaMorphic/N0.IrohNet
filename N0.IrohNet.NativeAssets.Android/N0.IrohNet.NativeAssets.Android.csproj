@@ -55,6 +55,8 @@
 	</ItemGroup>
 
 	<Target Condition="'$(RuntimeIdentifier)' != ''" Name="rustc" BeforeTargets="PreBuildEvent">
+		<Exec WorkingDirectory="../iroh-bindgen" Command="rustup target install $(RustTargetTriple)" />
+		
 		<Exec WorkingDirectory="../iroh-bindgen" Command="cargo ndk -t $(RustTargetAndroid) -- build --profile release" />
 
 		<Copy SourceFiles="@(RustTargetOutput)" DestinationFolder="runtimes/$(RuntimeIdentifier)/native" />
