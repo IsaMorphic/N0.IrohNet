@@ -23,7 +23,6 @@ To build Iroh.NET locally, your development environment needs the following tool
 Linux
 
 1. [Podman](https://podman.io/docs/installation)
-
 2. [`cargo-cross`](https://github.com/zijiren233/cargo-cross)
 
 Android
