@@ -54,7 +54,7 @@
 	</ItemGroup>
 
 	<Target Condition="'$(RuntimeIdentifier)' != ''" Name="rustc" BeforeTargets="PreBuildEvent">
-		<Exec WorkingDirectory="../iroh-bindgen" Command="rustup target install $(RustTargetTriple)" />
+		<Exec WorkingDirectory="../iroh-bindgen" Command="rustup target add $(RustTargetTriple) --force" />
 		
 		<Exec WorkingDirectory="../iroh-bindgen" Command="cargo build --target $(RustTargetTriple) --profile release" />
 
