@@ -4,6 +4,10 @@ fn main() -> Result<(), Box<dyn Error>> {
     // using bindgen, generate binding code
    bindgen::Builder::default()
         .header("../iroh-c-ffi/irohnet.h")
+        .default_enum_style(bindgen::EnumVariation::Rust {
+            non_exhaustive: false,
+        })
+        .clang_arg("-DDOXYGEN")
         .generate()?
         .write_to_file("src/iroh.rs")?;
         
