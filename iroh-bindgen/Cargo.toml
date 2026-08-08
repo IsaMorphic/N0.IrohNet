@@ -7,7 +7,7 @@ edition = "2021"
 crate-type = ["cdylib"]
 
 [dependencies]
-iroh-c-ffi = { path = "../iroh-c-ffi", features = ["headers"] }
+iroh-c-ffi = { path = "../iroh-c-ffi" }
 
 [build-dependencies]
 csbindgen = "1.9.6"
