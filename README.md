@@ -2,7 +2,7 @@
 
 [![NuGet](https://github.com/IsaMorphic/N0.IrohNet/actions/workflows/nuget.yml/badge.svg)](https://github.com/IsaMorphic/N0.IrohNet/actions/workflows/nuget.yml)
 
-This repository hosts unofficial C# .NET bindings for the [iroh library](https://iroh.computer/) by [N0 Inc.](https://n0.computer/) The project uses [CySharp's csbindgen](https://github.com/CySharp/csbindgen) library to create a shim using iroh's C FFI bindings that can be used directly in .NET code via traditional interop. 
+This repository hosts unofficial C# .NET bindings for the [iroh library](https://iroh.computer/) by [N0 Inc.](https://n0.computer/) The project uses [CySharp's csbindgen](https://github.com/CySharp/csbindgen) library to create a shim using [iroh's C FFI](https://github.com/n0-computer/iroh-c-ffi) bindings that can be used directly in .NET code via traditional interop. 
 
 # How to Use
 
@@ -51,7 +51,7 @@ git submodule update --init --recursive
 Once completed, you may add the `.csproj` found in `external/N0.IrohNet` to any of your other MSBuild projects:
 
 ```xml
-<ProjectReference Include="..\external\N0.IrohNet\N0.IrohNet.csproj" />
+<ProjectReference Include="..\external\N0.IrohNet\N0.IrohNet\N0.IrohNet.csproj" />
 ```
 
 ## Compiling
