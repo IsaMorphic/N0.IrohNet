@@ -42,44 +42,34 @@
 		</PackageReference>
 	</ItemGroup>
 
-	<PropertyGroup>
-		<IsPacking>false</IsPacking>
-	</PropertyGroup>
-
-	<Target Name="Pack">
-		<PropertyGroup>
-			<IsPacking>true</IsPacking>
-		</PropertyGroup>
-	</Target>
-
 	<ItemGroup>
 		<ProjectReference Condition="'$(TargetFramework)' == 'net10.0'"
 			Include="../N0.IrohNet.NativeAssets.Linux/N0.IrohNet.NativeAssets.Linux.csproj">
-			<ReferenceOutputAssembly Condition="$(IsPacking)">false</ReferenceOutputAssembly>
+			<IncludeAssets>runtime; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</ProjectReference>
 		<ProjectReference Condition="'$(TargetFramework)' == 'net10.0'"
 			Include="../N0.IrohNet.NativeAssets.macOS/N0.IrohNet.NativeAssets.macOS.csproj">
-			<ReferenceOutputAssembly Condition="$(IsPacking)">false</ReferenceOutputAssembly>
+			<IncludeAssets>runtime; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</ProjectReference>
 		<ProjectReference Condition="'$(TargetFramework)' == 'net10.0'"
 			Include="../N0.IrohNet.NativeAssets.Win32/N0.IrohNet.NativeAssets.Win32.csproj">
-			<ReferenceOutputAssembly Condition="$(IsPacking)">false</ReferenceOutputAssembly>
+			<IncludeAssets>runtime; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</ProjectReference>
 		<ProjectReference Condition="'$(TargetFramework)' == 'net10.0-windows'"
 			Include="../N0.IrohNet.NativeAssets.Win32/N0.IrohNet.NativeAssets.Win32.csproj">
-			<ReferenceOutputAssembly Condition="$(IsPacking)">false</ReferenceOutputAssembly>
+			<IncludeAssets>runtime; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</ProjectReference>
 		<ProjectReference Condition="'$(TargetFramework)' == 'net10.0-macos'"
 			Include="../N0.IrohNet.NativeAssets.macOS/N0.IrohNet.NativeAssets.macOS.csproj">
-			<ReferenceOutputAssembly Condition="$(IsPacking)">false</ReferenceOutputAssembly>
+			<IncludeAssets>runtime; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</ProjectReference>
 		<ProjectReference Condition="'$(TargetFramework)' == 'net10.0-android'"
 			Include="../N0.IrohNet.NativeAssets.Android/N0.IrohNet.NativeAssets.Android.csproj">
-			<ReferenceOutputAssembly Condition="$(IsPacking)">false</ReferenceOutputAssembly>
+			<IncludeAssets>runtime; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</ProjectReference>
 		<ProjectReference Condition="'$(TargetFramework)' == 'net10.0-ios'"
 			Include="../N0.IrohNet.NativeAssets.iOS/N0.IrohNet.NativeAssets.iOS.csproj">
-			<ReferenceOutputAssembly Condition="$(IsPacking)">false</ReferenceOutputAssembly>
+			<IncludeAssets>runtime; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</ProjectReference>
 	</ItemGroup>
 </Project>
