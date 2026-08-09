@@ -49,6 +49,7 @@
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</None>
 		<AndroidNativeLibrary Remove="*/**" />
+		<AndroidNativeLibrary Include="@(NativeLibs)" />
 	</ItemGroup>
 
 	<ItemGroup>
