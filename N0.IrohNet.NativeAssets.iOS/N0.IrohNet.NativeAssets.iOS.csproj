@@ -45,6 +45,8 @@
 			<PackageCopyToOutput>true</PackageCopyToOutput>
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</None>
+		<NativeReference Remove="*/**" />
+		<NativeReference Include="@(NativeLibs)" Kind="Dynamic" />
 	</ItemGroup>
 
 	<ItemGroup>
