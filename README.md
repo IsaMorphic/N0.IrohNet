@@ -84,10 +84,10 @@ dotnet build N0.IrohNet.NativeAssets.macOS --framework net10.0 --runtime osx-arm
 
 ```bash
 # Build for x64 machines
-dotnet build N0.IrohNet.NativeAssets.macOS --framework net10.0 --runtime linux-x64
+dotnet build N0.IrohNet.NativeAssets.Linux --framework net10.0 --runtime linux-x64
 
 # Build for ARM64 machines
-dotnet build N0.IrohNet.NativeAssets.macOS --framework net10.0 --runtime linux-arm64
+dotnet build N0.IrohNet.NativeAssets.Linux --framework net10.0 --runtime linux-arm64
 ```
 
 ### For Mobile Development (Android)
@@ -123,7 +123,7 @@ dotnet build N0.IrohNet.NativeAssets.iOS --runtime iossimulator-x64
 dotnet build N0.IrohNet.NativeAssets.iOS --runtime iossimulator-arm64
 
 # Build for ARM64 devices (iPhones & iPads)
-dotnet build N0.IrohNet.NativeAssets.Android --runtime ios-arm64
+dotnet build N0.IrohNet.NativeAssets.iOS --runtime ios-arm64
 ```
 
 Finally, in the iOS application project file, include a reference to the iOS assets folder as follows. Doing so will ensure that the native `iroh-bindgen` library is included in the app bundle.
