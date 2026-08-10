@@ -1,6 +1,6 @@
 # Iroh.NET
 
-[![NuGet Build](https://github.com/IsaMorphic/N0.IrohNet/actions/workflows/nuget.yml/badge.svg)](https://github.com/IsaMorphic/N0.IrohNet/actions/workflows/nuget.yml) ![NuGet Version](https://img.shields.io/nuget/v/N0.IrohNet?style=flat&label=NuGet%20version)
+[![NuGet Build](https://github.com/IsaMorphic/N0.IrohNet/actions/workflows/nuget.yml/badge.svg)](https://github.com/IsaMorphic/N0.IrohNet/actions/workflows/nuget.yml) [![NuGet Version](https://img.shields.io/nuget/v/N0.IrohNet?style=flat&label=NuGet%20version)](https://www.nuget.org/packages/N0.IrohNet)
 
 This repository hosts unofficial C# .NET bindings for the [iroh library](https://iroh.computer/) by [N0 Inc.](https://n0.computer/) The project uses [CySharp's csbindgen](https://github.com/CySharp/csbindgen) library to create a shim using [iroh's C FFI](https://github.com/n0-computer/iroh-c-ffi) bindings that can be used directly in .NET code via traditional interop. 
 
