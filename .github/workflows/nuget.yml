@@ -14,7 +14,7 @@ jobs:
         os: [ubuntu-latest, windows-latest, macos-latest]
     runs-on: ${{ matrix.os }}
     permissions:
-      contents: write
+      contents: read
       id-token: write
     env:
       RUNTIME_ID_OS: |-
@@ -39,7 +39,7 @@ jobs:
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: 10.0.x
-      - name: Install cross-compilation tools
+      - name: Install cross-compilation tools (Linux)
         if: matrix.os == 'ubuntu-latest'
         run: cargo install cargo-cross --git https://github.com/zijiren233/cargo-cross
       - name: Restore workloads
@@ -66,7 +66,7 @@ jobs:
         os: [ubuntu-latest, macos-latest]
     runs-on: ${{ matrix.os }}
     permissions:
-      contents: write
+      contents: read
       id-token: write
     env:
       RUNTIME_ID_OS: |-
@@ -98,21 +98,63 @@ jobs:
         with:
           ndk-version: r29
           link-to-sdk: true
-      - name: Install cross-compilation tools
+      - name: Install cross-compilation tools (Android)
         if: matrix.os == 'ubuntu-latest'
         run: cargo install cargo-ndk
       - name: Restore workloads
         run: dotnet workload restore
       - name: Build for x64
         run: dotnet build N0.IrohNet.NativeAssets.${{ env.PACKAGE_ID_OS }} --runtime ${{ env.RUNTIME_ID_OS }}-x64
-      - name: Build for ARM
-        if: matrix.os == 'ubuntu-latest'
-        run: dotnet build N0.IrohNet.NativeAssets.${{ env.PACKAGE_ID_OS }} --runtime ${{ env.RUNTIME_ID_OS }}-arm
       - name: Build for ARM64
         run: dotnet build N0.IrohNet.NativeAssets.${{ env.PACKAGE_ID_OS }} --runtime ${{ env.RUNTIME_ID_OS }}-arm64
-      - name: Build for ARM64 (Device)
+      - name: Build for ARM (Android)
+        if: matrix.os == 'ubuntu-latest'
+        run: dotnet build N0.IrohNet.NativeAssets.${{ env.PACKAGE_ID_OS }} --runtime ${{ env.RUNTIME_ID_OS }}-arm
+      - name: Build for ARM64 (iOS, Device)
         if: matrix.os == 'macos-latest'
         run: dotnet build N0.IrohNet.NativeAssets.${{ env.PACKAGE_ID_OS }} --runtime ios-arm64
+      - name: Create NuGet package (native)
+        run: dotnet pack N0.IrohNet.NativeAssets.${{ env.PACKAGE_ID_OS }} --output build/
+      - name: NuGet login (OIDC → temp API key)
+        uses: NuGet/login@v1
+        id: login
+        with:
+          user: ${{ secrets.NUGET_USERNAME }}
+      - name: Publish to NuGet
+        run: dotnet nuget push --api-key ${{ steps.login.outputs.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json build/**/*.nupkg --skip-duplicate
+  publish-extra:
+    strategy:
+      matrix:
+        os: [macos-latest]
+    runs-on: ${{ matrix.os }}
+    permissions:
+      contents: read
+      id-token: write
+    env:
+      RUNTIME_ID_OS: |-
+        ${{ case(
+          matrix.os == 'macos-latest', 'maccatalyst',
+          'unknown'
+        ) }}
+      PACKAGE_ID_OS: |-
+        ${{ case(
+          matrix.os == 'macos-latest', 'MacCatalyst',
+          'unknown'
+        ) }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+      - name: Restore workloads
+        run: dotnet workload restore
+      - name: Build for x64
+        run: dotnet build N0.IrohNet.NativeAssets.${{ env.PACKAGE_ID_OS }} --runtime ${{ env.RUNTIME_ID_OS }}-x64
+      - name: Build for ARM64
+        run: dotnet build N0.IrohNet.NativeAssets.${{ env.PACKAGE_ID_OS }} --runtime ${{ env.RUNTIME_ID_OS }}-arm64
       - name: Create NuGet package (native)
         run: dotnet pack N0.IrohNet.NativeAssets.${{ env.PACKAGE_ID_OS }} --output build/
       - name: NuGet login (OIDC → temp API key)
