@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFrameworks>net10.0;net10.0-windows;net10.0-macos;net10.0-android;net10.0-ios</TargetFrameworks>
+		<TargetFrameworks>net10.0;net10.0-windows;net10.0-macos;net10.0-android;net10.0-ios;net10.0-maccatalyst</TargetFrameworks>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
 		<AllowUnsafeBlocks>True</AllowUnsafeBlocks>
@@ -69,6 +69,10 @@
 		</ProjectReference>
 		<ProjectReference Condition="'$(TargetFramework)' == 'net10.0-ios'"
 			Include="../N0.IrohNet.NativeAssets.iOS/N0.IrohNet.NativeAssets.iOS.csproj">
+			<IncludeAssets>runtime; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</ProjectReference>
+		<ProjectReference Condition="'$(TargetFramework)' == 'net10.0-maccatalyst'"
+			Include="../N0.IrohNet.NativeAssets.MacCatalyst/N0.IrohNet.NativeAssets.MacCatalyst.csproj">
 			<IncludeAssets>runtime; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</ProjectReference>
 	</ItemGroup>
