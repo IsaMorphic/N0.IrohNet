@@ -13,7 +13,7 @@
 		<IsPackable>true</IsPackable>
 		<PackageId>N0.IrohNet</PackageId>
 		<Company>N0 Inc.</Company>
-		<Description>C# .NET bindings for the Iroh library</Description>
+		<Description>C# .NET bindings for the iroh library</Description>
 		<PackageTags>iroh;networking;bindings;native</PackageTags>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
