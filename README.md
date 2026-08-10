@@ -132,6 +132,24 @@ Finally, in the iOS application project file, include a reference to the iOS ass
 <ProjectReference Include="..\external\N0.IrohNet\N0.IrohNet.NativeAssets.iOS\N0.IrohNet.NativeAssets.iOS.csproj" />
 ```
 
+### For Mobile Development (Mac Catalyst)
+
+For native Catalyst builds, ensure that XCode is installed on your macOS build machine, along with the current version of XCode Command-line Tools and the most recent macOS SDK. Then run one of the following commands to compile for the architecture of choice.
+
+```bash
+# Build for x64 machines
+dotnet build N0.IrohNet.NativeAssets.MacCatalyst --runtime maccatalyst-x64
+
+# Build for ARM64 machines
+dotnet build N0.IrohNet.NativeAssets.MacCatalyst --runtime maccatalyst-arm64
+```
+
+Finally, in the Catalyst application project file, include a reference to the Catalyst assets folder as follows. Doing so will ensure that the native `iroh-bindgen` library is included in the app bundle.
+
+```xml
+<ProjectReference Include="..\external\N0.IrohNet\N0.IrohNet.NativeAssets.MacCatalyst\N0.IrohNet.NativeAssets.MacCatalyst.csproj" />
+```
+
 ## Updating the Bindings
 
 To update these bindings within your repository, go to the `external/N0.IrohNet` subdirectory and run:
