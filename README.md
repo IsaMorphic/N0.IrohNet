@@ -1,6 +1,6 @@
 # Iroh.NET
 
-[![NuGet](https://github.com/IsaMorphic/N0.IrohNet/actions/workflows/nuget.yml/badge.svg)](https://github.com/IsaMorphic/N0.IrohNet/actions/workflows/nuget.yml)
+[![NuGet Build](https://github.com/IsaMorphic/N0.IrohNet/actions/workflows/nuget.yml/badge.svg)](https://github.com/IsaMorphic/N0.IrohNet/actions/workflows/nuget.yml) ![NuGet Version](https://img.shields.io/nuget/v/N0.IrohNet?style=flat&label=NuGet%20version)
 
 This repository hosts unofficial C# .NET bindings for the [iroh library](https://iroh.computer/) by [N0 Inc.](https://n0.computer/) The project uses [CySharp's csbindgen](https://github.com/CySharp/csbindgen) library to create a shim using [iroh's C FFI](https://github.com/n0-computer/iroh-c-ffi) bindings that can be used directly in .NET code via traditional interop. 
 
@@ -58,15 +58,79 @@ Once completed, you may add the `.csproj` found in `external/N0.IrohNet` to any 
 
 ### For Local Development (Desktop)
 
-These bindings will automatically compile the necessary native dependencies using `cargo` on all desktop platforms, namely Windows, macOS, and Linux. Simply invoke `dotnet build` for any dependent projects, making sure to pass an RID either in your project file, or at the command-line. The RID is only necessary to include when publishing or debugging your project. Otherwise, native dependency builds are skipped if left unspecified. 
+To use these bindings locally in a desktop development environment, the native dependencies must be compiled first. Follow the instructions below for the relevant platform. Only one of these commands need be executed for a given platform depending on the architecture of the development machine. 
+
+#### Windows
+
+```powershell
+# Build for x64 machines
+dotnet build N0.IrohNet.NativeAssets.Win32 --framework net10.0 --runtime win-x64
+
+# Build for ARM64 machines
+dotnet build N0.IrohNet.NativeAssets.Win32 --framework net10.0 --runtime win-arm64
+```
+
+#### macOS
+
+```bash
+# Build for x64 machines
+dotnet build N0.IrohNet.NativeAssets.macOS --framework net10.0 --runtime osx-x64
+
+# Build for ARM64 machines
+dotnet build N0.IrohNet.NativeAssets.macOS --framework net10.0 --runtime osx-arm64
+```
+
+#### Linux
+
+```bash
+# Build for x64 machines
+dotnet build N0.IrohNet.NativeAssets.macOS --framework net10.0 --runtime linux-x64
+
+# Build for ARM64 machines
+dotnet build N0.IrohNet.NativeAssets.macOS --framework net10.0 --runtime linux-arm64
+```
 
 ### For Mobile Development (Android)
 
-For native Android builds, one must ensure that `cargo-ndk` is installed in a Linux-based development machine. WSL works just fine for Windows users. Then, ensure that Android Studio is installed within that environment and add an older NDK version (r29 works just fine). Then simply pass an Android RID to `dotnet build`.
+For native Android builds, one must ensure that `cargo-ndk` is installed in a Linux-based development machine. WSL works just fine for Windows users. Then, ensure that Android Studio is installed within that environment and add an older NDK version (r29 works just fine). Then run one of the following commands to compile for the architecture of choice.
+
+```bash
+# Build for x64 devices (emulators)
+dotnet build N0.IrohNet.NativeAssets.Android --runtime android-x64
+
+# Build for ARMv7 devices (older phones)
+dotnet build N0.IrohNet.NativeAssets.Android --runtime android-arm
+
+# Build for ARM64 devices (newer phones)
+dotnet build N0.IrohNet.NativeAssets.Android --runtime android-arm64
+```
+
+Finally, in the Android application project file, include a reference to the Android assets folder as follows. Doing so will ensure that the native `iroh-bindgen` library is included in the APK.
+
+```xml
+<ProjectReference Include="..\external\N0.IrohNet\N0.IrohNet.NativeAssets.Android\N0.IrohNet.NativeAssets.Android.csproj" />
+```
 
 ### For Mobile Development (iOS)
 
-For native iOS builds, ensure that XCode is installed on your macOS build machine, along with the current version of XCode Command-line Tools and the most recent iOS SDK. Then simply pass an `ios` or `iossimulator` RID to `dotnet build`.
+For native iOS builds, ensure that XCode is installed on your macOS build machine, along with the current version of XCode Command-line Tools and the most recent iOS SDK. Then run one of the following commands to compile for the architecture of choice.
+
+```bash
+# Build for x64 machines (simulator)
+dotnet build N0.IrohNet.NativeAssets.iOS --runtime iossimulator-x64
+
+# Build for ARM64 machines (simulator)
+dotnet build N0.IrohNet.NativeAssets.iOS --runtime iossimulator-arm64
+
+# Build for ARM64 devices (iPhones & iPads)
+dotnet build N0.IrohNet.NativeAssets.Android --runtime ios-arm64
+```
+
+Finally, in the iOS application project file, include a reference to the iOS assets folder as follows. Doing so will ensure that the native `iroh-bindgen` library is included in the app bundle.
+
+```xml
+<ProjectReference Include="..\external\N0.IrohNet\N0.IrohNet.NativeAssets.iOS\N0.IrohNet.NativeAssets.iOS.csproj" />
+```
 
 ## Updating the Bindings
 
