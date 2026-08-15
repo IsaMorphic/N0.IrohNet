@@ -7,6 +7,7 @@
 		<AllowUnsafeBlocks>True</AllowUnsafeBlocks>
 		<OutputType>Library</OutputType>
 		<MinVerDefaultPreReleaseIdentifiers>preview.0</MinVerDefaultPreReleaseIdentifiers>
+		<IsNuGetBuild>false</IsNuGetBuild>
 	</PropertyGroup>
 
 	<PropertyGroup>
@@ -45,35 +46,35 @@
 	<ItemGroup>
 		<ProjectReference Condition="'$(TargetFramework)' == 'net10.0'"
 			Include="../N0.IrohNet.NativeAssets.Linux/N0.IrohNet.NativeAssets.Linux.csproj">
-			<IncludeAssets>runtime; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+			<ReferenceOutputAssembly>$(IsNuGetBuild)</ReferenceOutputAssembly>
 		</ProjectReference>
 		<ProjectReference Condition="'$(TargetFramework)' == 'net10.0'"
 			Include="../N0.IrohNet.NativeAssets.macOS/N0.IrohNet.NativeAssets.macOS.csproj">
-			<IncludeAssets>runtime; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+			<ReferenceOutputAssembly>$(IsNuGetBuild)</ReferenceOutputAssembly>
 		</ProjectReference>
 		<ProjectReference Condition="'$(TargetFramework)' == 'net10.0'"
 			Include="../N0.IrohNet.NativeAssets.Win32/N0.IrohNet.NativeAssets.Win32.csproj">
-			<IncludeAssets>runtime; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+			<ReferenceOutputAssembly>$(IsNuGetBuild)</ReferenceOutputAssembly>
 		</ProjectReference>
 		<ProjectReference Condition="'$(TargetFramework)' == 'net10.0-windows'"
 			Include="../N0.IrohNet.NativeAssets.Win32/N0.IrohNet.NativeAssets.Win32.csproj">
-			<IncludeAssets>runtime; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+			<ReferenceOutputAssembly>$(IsNuGetBuild)</ReferenceOutputAssembly>
 		</ProjectReference>
 		<ProjectReference Condition="'$(TargetFramework)' == 'net10.0-macos'"
 			Include="../N0.IrohNet.NativeAssets.macOS/N0.IrohNet.NativeAssets.macOS.csproj">
-			<IncludeAssets>runtime; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+			<ReferenceOutputAssembly>$(IsNuGetBuild)</ReferenceOutputAssembly>
 		</ProjectReference>
 		<ProjectReference Condition="'$(TargetFramework)' == 'net10.0-android'"
 			Include="../N0.IrohNet.NativeAssets.Android/N0.IrohNet.NativeAssets.Android.csproj">
-			<IncludeAssets>runtime; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+			<ReferenceOutputAssembly>$(IsNuGetBuild)</ReferenceOutputAssembly>
 		</ProjectReference>
 		<ProjectReference Condition="'$(TargetFramework)' == 'net10.0-ios'"
 			Include="../N0.IrohNet.NativeAssets.iOS/N0.IrohNet.NativeAssets.iOS.csproj">
-			<IncludeAssets>runtime; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+			<ReferenceOutputAssembly>$(IsNuGetBuild)</ReferenceOutputAssembly>
 		</ProjectReference>
 		<ProjectReference Condition="'$(TargetFramework)' == 'net10.0-maccatalyst'"
 			Include="../N0.IrohNet.NativeAssets.MacCatalyst/N0.IrohNet.NativeAssets.MacCatalyst.csproj">
-			<IncludeAssets>runtime; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+			<ReferenceOutputAssembly>$(IsNuGetBuild)</ReferenceOutputAssembly>
 		</ProjectReference>
 	</ItemGroup>
 </Project>
