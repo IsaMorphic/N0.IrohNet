@@ -58,7 +58,7 @@ namespace N0.IrohNet
                     return IntPtr.Zero;
                 }
 
-                libraryPath = Path.Combine("runtimes", rid, "native", libName);
+                libraryPath = Path.Combine(AppContext.BaseDirectory, "runtimes", rid, "native", libName);
             }
             else 
             {
@@ -87,7 +87,7 @@ namespace N0.IrohNet
             {
                 return handle;
             }
-            else 
+            else
             {
                 return IntPtr.Zero;
             }
