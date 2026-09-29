@@ -52,10 +52,17 @@
 		</PackageReference>
 	</ItemGroup>
 
+	<PropertyGroup>
+		<!-- x64 builds compile natively with plain cargo (works locally and in CI);
+		     cross-compiled targets (arm64) still require cargo-cross -->
+		<CargoBuildCommand Condition="'$(RuntimeIdentifier)' == 'linux-x64'">cargo</CargoBuildCommand>
+		<CargoBuildCommand Condition="'$(RuntimeIdentifier)' != 'linux-x64'">cargo cross</CargoBuildCommand>
+	</PropertyGroup>
+
 	<Target Condition="'$(RuntimeIdentifier)' != ''" Name="rustc" BeforeTargets="PreBuildEvent">
 		<Exec WorkingDirectory="../iroh-bindgen" Command="rustup target add $(RustTargetTriple)" />
-		
-		<Exec WorkingDirectory="../iroh-bindgen" Command="cargo cross build --target $(RustTargetTriple) --profile release" />
+
+		<Exec WorkingDirectory="../iroh-bindgen" Command="$(CargoBuildCommand) build --target $(RustTargetTriple) --profile release" />
 
 		<Copy SourceFiles="@(RustTargetOutput)" DestinationFolder="runtimes/$(RuntimeIdentifier)/native" />
 	</Target>
