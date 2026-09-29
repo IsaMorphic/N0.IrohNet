@@ -8,6 +8,7 @@ public sealed class IrohConnection : IAsyncDisposable, IDisposable
 {
     private const int DatagramPollMilliseconds = 1000;
     private const int DatagramQueueCapacity = 4096;
+    private static readonly TimeSpan DisposeWaitTimeout = TimeSpan.FromSeconds(3);
 
     private readonly SafeConnectionHandle _handle;
     private readonly IrohEndpoint _owner;
@@ -42,6 +43,7 @@ public sealed class IrohConnection : IAsyncDisposable, IDisposable
     public byte[]? NegotiatedAlpn { get; }
 
     /// <summary>Gets the maximum datagram size in bytes, or 0 when datagrams are not supported.</summary>
+    /// <remarks>The limit reflects the connection's current path and can change over its lifetime (e.g. path MTU discovery raising it).</remarks>
     public unsafe nuint MaxDatagramSize
     {
         get
@@ -115,7 +117,8 @@ public sealed class IrohConnection : IAsyncDisposable, IDisposable
         return Task.Run(() => AcceptStreamCore(), cancellationToken);
     }
 
-    /// <summary>Sends an unreliable datagram, throwing <see cref="IrohException"/> when the payload exceeds <see cref="MaxDatagramSize"/>.</summary>
+    /// <summary>Sends an unreliable datagram, throwing <see cref="IrohException"/> when the payload exceeds the current maximum datagram size.</summary>
+    /// <remarks>The size check uses the limit observed at call time; since the transport's limit can change (path MTU discovery), it is an advisory guard and the native send remains the authority.</remarks>
     public Task SendDatagramAsync(ReadOnlyMemory<byte> payload, CancellationToken cancellationToken = default)
     {
         cancellationToken.ThrowIfCancellationRequested();
@@ -152,6 +155,14 @@ public sealed class IrohConnection : IAsyncDisposable, IDisposable
     }
 
     /// <summary>Closes the connection gracefully and stops the datagram pump.</summary>
+    /// <remarks>
+    /// Native accept-family calls hold the connection for their entire — uncancellable — duration,
+    /// so an in-flight <see cref="AcceptStreamAsync"/> can hold the lock this method needs. The wait
+    /// is bounded: freeing the container while a native call still borrows it would be use-after-free,
+    /// so on timeout the container is deliberately leaked instead. Streams should be drained before
+    /// closing: as in any QUIC implementation, an immediate connection close discards stream data
+    /// that has not been delivered to the peer yet.
+    /// </remarks>
     public void Dispose()
     {
         if (Interlocked.Exchange(ref _disposed, 1) != 0)
@@ -159,25 +170,34 @@ public sealed class IrohConnection : IAsyncDisposable, IDisposable
             return;
         }
 
-        _lock.EnterWriteLock();
-        try
-        {
-            _closed = true;
-            using NativeGuard guard = new(_handle);
-            if (guard.IsValid)
-            {
-                unsafe
-                {
-                    Connection* connection = (Connection*)guard.Pointer;
-                    iroh.connection_close(connection); // consumes the container
-                }
-            }
+        _closed = true;
 
+        if (!_lock.TryEnterWriteLock(DisposeWaitTimeout))
+        {
+            // A native call (e.g. a pending accept) still borrows the container and cannot be
+            // interrupted; freeing it now would be use-after-free, so leak it as a safe degradation.
             _handle.SetHandleAsInvalid();
         }
-        finally
+        else
         {
-            _lock.ExitWriteLock();
+            try
+            {
+                using NativeGuard guard = new(_handle);
+                if (guard.IsValid)
+                {
+                    unsafe
+                    {
+                        Connection* connection = (Connection*)guard.Pointer;
+                        iroh.connection_close(connection); // consumes the container
+                    }
+                }
+
+                _handle.SetHandleAsInvalid();
+            }
+            finally
+            {
+                _lock.ExitWriteLock();
+            }
         }
 
         _incomingDatagrams.Writer.TryComplete();

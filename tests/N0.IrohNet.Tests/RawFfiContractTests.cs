@@ -26,6 +26,7 @@ public class RawFfiContractTests
             try
             {
                 long serverBytesEchoed = 0;
+                var echoReadByClient = new ManualResetEventSlim(false);
                 Thread serverEcho = new(() =>
                 {
                     Endpoint* endpoint = (Endpoint*)serverPointer;
@@ -70,6 +71,10 @@ public class RawFfiContractTests
 
                     iroh.send_stream_finish(send); // consumes the send container
                     iroh.recv_stream_free(recv);
+                    // Wait until the client has actually read the echo before closing: an immediate
+                    // connection_close discards stream data not yet delivered (same pattern as the
+                    // upstream Rust stream_bi test, which waits for the client's confirmation).
+                    echoReadByClient.Wait(TimeSpan.FromSeconds(10));
                     iroh.connection_close(connection);
                     Interlocked.Exchange(ref serverBytesEchoed, total);
                 });
@@ -118,6 +123,7 @@ public class RawFfiContractTests
                 }
 
                 Assert.Equal(message, echoed);
+                echoReadByClient.Set();
                 Assert.True(serverEcho.Join(TimeSpan.FromSeconds(30)), "the server echo thread did not finish");
                 Assert.Equal(message.Length, Interlocked.Read(ref serverBytesEchoed));
 

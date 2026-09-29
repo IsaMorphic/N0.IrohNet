@@ -42,7 +42,10 @@ public class DatagramTests
         nuint maxDatagramSize = pair.ClientConnection.MaxDatagramSize;
         Assert.True(maxDatagramSize > 0, $"Expected datagram support on loopback, got max size {maxDatagramSize}.");
 
-        byte[] tooBig = new byte[checked((int)maxDatagramSize) + 1];
+        // A payload far beyond any limit the transport could negotiate: loopback MTU discovery can
+        // raise the limit above the initially observed value, so max+1 is not a reliable oversize
+        // probe. 128 KiB exceeds QUIC's absolute datagram ceiling (65527), so the send must fail.
+        byte[] tooBig = new byte[128 * 1024];
         IrohException exception = await Assert.ThrowsAsync<IrohException>(
             () => pair.ClientConnection.SendDatagramAsync(tooBig)).WaitAsync(TestTimeouts.Io);
         Assert.Equal(IrohErrorCode.SendError, exception.ErrorCode);

@@ -3,6 +3,8 @@ namespace N0.IrohNet;
 /// <summary>An iroh endpoint that can connect to and accept connections from remote nodes.</summary>
 public sealed class IrohEndpoint : IAsyncDisposable, IDisposable
 {
+    private static readonly TimeSpan DisposeWaitTimeout = TimeSpan.FromSeconds(3);
+
     private readonly SafeEndpointHandle _handle;
     private readonly ReaderWriterLockSlim _lock = new(LockRecursionPolicy.NoRecursion);
     private readonly object _connectionsGate = new();
@@ -81,7 +83,7 @@ public sealed class IrohEndpoint : IAsyncDisposable, IDisposable
                 using NativeGuard endpointGuard = new(handle);
                 Endpoint* endpoint = (Endpoint*)endpointGuard.Pointer;
                 EndpointResult result = iroh.endpoint_bind(&config, null, null, &endpoint);
-                iroh.endpoint_config_free(config); // passed by value: consumes the config, including the ALPN vectors
+                iroh.endpoint_config_free(config); // endpoint_bind only borrows the config; freeing it here releases the ALPN vectors add_alpn allocated
                 configFreed = true;
                 if (result != EndpointResult.ENDPOINT_RESULT_OK)
                 {
@@ -208,14 +210,15 @@ public sealed class IrohEndpoint : IAsyncDisposable, IDisposable
         }
     }
 
-    /// <summary>Closes the endpoint and all of its connections gracefully; waits for in-flight endpoint operations to finish.</summary>
+    /// <summary>Closes the endpoint and all of its connections gracefully; waits at most a few seconds for in-flight operations.</summary>
+    /// <remarks>Native connect/accept calls cannot be interrupted; if one is still in flight after the bounded wait, the native container is deliberately leaked rather than freed under a live borrow.</remarks>
     public ValueTask DisposeAsync()
     {
         Dispose();
         return ValueTask.CompletedTask;
     }
 
-    /// <summary>Closes the endpoint and all of its connections gracefully; waits for in-flight endpoint operations to finish.</summary>
+    /// <summary>Closes the endpoint and all of its connections gracefully; waits at most a few seconds for in-flight operations.</summary>
     public void Dispose()
     {
         if (Interlocked.Exchange(ref _disposed, 1) != 0)
@@ -229,11 +232,18 @@ public sealed class IrohEndpoint : IAsyncDisposable, IDisposable
             TryDispose(connection);
         }
 
-        _lock.EnterWriteLock();
+        _closed = true;
+
+        if (!_lock.TryEnterWriteLock(DisposeWaitTimeout))
+        {
+            // A native call (e.g. a pending accept or connect, which cannot be interrupted) still
+            // borrows the container; freeing it now would be use-after-free, so leak it instead.
+            _handle.SetHandleAsInvalid();
+            return;
+        }
+
         try
         {
-            _closed = true;
-
             // Connections tracked by an operation that raced the first pass are closed here, before the endpoint itself.
             foreach (IrohConnection connection in DrainConnections())
             {
