@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFrameworks>net10.0</TargetFrameworks>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+		<Description>Safe, idiomatic connection layer over the raw N0.IrohNet FFI bindings for the iroh library</Description>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="../N0.IrohNet/N0.IrohNet.csproj" />
+	</ItemGroup>
+
+</Project>
