@@ -1,0 +1,33 @@
+name: Tests
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+
+jobs:
+  test-linux-x64:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: x86_64-unknown-linux-gnu
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: iroh-bindgen
+      - name: Build native assets (linux-x64)
+        run: dotnet build N0.IrohNet.NativeAssets.Linux/N0.IrohNet.NativeAssets.Linux.csproj --framework net10.0 --runtime linux-x64
+      - name: Run tests
+        run: >
+          dotnet test tests/N0.IrohNet.Tests/N0.IrohNet.Tests.csproj
+          --framework net10.0 --runtime linux-x64
+          -p:TargetFrameworks=net10.0 -c Release
+          --logger "console;verbosity=normal"

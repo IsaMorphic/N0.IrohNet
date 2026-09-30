@@ -6,4 +6,6 @@
   <Project Path="N0.IrohNet.NativeAssets.macOS/N0.IrohNet.NativeAssets.macOS.csproj" />
   <Project Path="N0.IrohNet.NativeAssets.Win32/N0.IrohNet.NativeAssets.Win32.csproj" />
   <Project Path="N0.IrohNet/N0.IrohNet.csproj" />
+  <Project Path="N0.IrohNet.Safe/N0.IrohNet.Safe.csproj" />
+  <Project Path="tests/N0.IrohNet.Tests/N0.IrohNet.Tests.csproj" />
 </Solution>
