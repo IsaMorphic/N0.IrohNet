@@ -1,10 +1,17 @@
 namespace N0.IrohNet;
 
 /// <summary>A bidirectional stream; supports one concurrent reader and one concurrent writer, like any <see cref="Stream"/>.</summary>
+/// <remarks>
+/// Open streams stay valid independently of the endpoint's and connection's lifetime; disposing those
+/// while streams are still open drains gracefully rather than invalidating the streams (the native
+/// stream types are reference-counted).
+/// </remarks>
 public sealed class IrohStream : Stream
 {
     private const int AsyncSliceMilliseconds = 250;
+    private static readonly TimeSpan DisposeWaitTimeout = TimeSpan.FromSeconds(3);
 
+    private readonly ReaderWriterLockSlim _lock = new(LockRecursionPolicy.NoRecursion);
     private readonly SafeSendStreamHandle _send;
     private readonly SafeRecvStreamHandle _recv;
     private TimeSpan _readTimeout = Timeout.InfiniteTimeSpan;
@@ -18,13 +25,13 @@ public sealed class IrohStream : Stream
     }
 
     /// <inheritdoc />
-    public override bool CanRead => true;
+    public override bool CanRead => _disposed == 0;
 
     /// <inheritdoc />
     public override bool CanSeek => false;
 
     /// <inheritdoc />
-    public override bool CanWrite => true;
+    public override bool CanWrite => _disposed == 0;
 
     /// <inheritdoc />
     public override bool CanTimeout => true;
@@ -69,48 +76,64 @@ public sealed class IrohStream : Stream
             return 0;
         }
 
-        using NativeGuard guard = new(_recv);
-        ObjectDisposedException.ThrowIf(!guard.IsValid, this);
-        RecvStream* stream = (RecvStream*)guard.Pointer;
-        long read;
-        if (_readTimeout == Timeout.InfiniteTimeSpan)
+        // The read lock serializes against Dispose: the native read borrows the recv container
+        // (&mut box), so freeing it concurrently would be use-after-free.
+        _lock.EnterReadLock();
+        try
         {
-            fixed (byte* bufferPtr = buffer)
+            using NativeGuard guard = new(_recv);
+            ObjectDisposedException.ThrowIf(!guard.IsValid, this);
+            RecvStream* stream = (RecvStream*)guard.Pointer;
+            long read;
+            if (_readTimeout == Timeout.InfiniteTimeSpan)
             {
-                read = iroh.recv_stream_read(&stream, new slice_mut_uint8 { ptr = bufferPtr, len = (nuint)buffer.Length });
+                fixed (byte* bufferPtr = buffer)
+                {
+                    read = iroh.recv_stream_read(&stream, new slice_mut_uint8 { ptr = bufferPtr, len = (nuint)buffer.Length });
+                }
             }
-        }
-        else
-        {
-            fixed (byte* bufferPtr = buffer)
+            else
             {
-                read = iroh.recv_stream_read_timeout(&stream, new slice_mut_uint8 { ptr = bufferPtr, len = (nuint)buffer.Length }, (ulong)_readTimeout.TotalMilliseconds);
+                fixed (byte* bufferPtr = buffer)
+                {
+                    read = iroh.recv_stream_read_timeout(&stream, new slice_mut_uint8 { ptr = bufferPtr, len = (nuint)buffer.Length }, (ulong)_readTimeout.TotalMilliseconds);
+                }
+
+                if (read == -2)
+                {
+                    throw new TimeoutException($"The stream read did not complete within {_readTimeout}.");
+                }
             }
 
-            if (read == -2)
+            if (read < 0)
             {
-                throw new TimeoutException($"The stream read did not complete within {_readTimeout}.");
+                throw new IrohException(IrohErrorCode.ReadError, "Failed to read from the stream.");
             }
-        }
 
-        if (read < 0)
+            return (int)read;
+        }
+        finally
         {
-            throw new IrohException(IrohErrorCode.ReadError, "Failed to read from the stream.");
+            _lock.ExitReadLock();
         }
-
-        return (int)read;
     }
 
     /// <summary>Reads from the stream, honoring the cancellation token between bounded native read slices.</summary>
-    public override async ValueTask<int> ReadAsync(Memory<byte> buffer, CancellationToken cancellationToken = default)
+    public override ValueTask<int> ReadAsync(Memory<byte> buffer, CancellationToken cancellationToken = default)
     {
         cancellationToken.ThrowIfCancellationRequested();
         ObjectDisposedException.ThrowIf(_disposed != 0, this);
         if (buffer.IsEmpty)
         {
-            return 0;
+            return ValueTask.FromResult(0);
         }
 
+        // The native read blocks its thread (in bounded slices), so the loop runs on the thread pool.
+        return new ValueTask<int>(Task.Run(() => ReadUntilAvailable(buffer, cancellationToken), cancellationToken));
+    }
+
+    private int ReadUntilAvailable(Memory<byte> buffer, CancellationToken cancellationToken)
+    {
         long deadline = _readTimeout == Timeout.InfiniteTimeSpan
             ? -1
             : Environment.TickCount64 + (long)_readTimeout.TotalMilliseconds;
@@ -155,26 +178,36 @@ public sealed class IrohStream : Stream
             return;
         }
 
-        using NativeGuard guard = new(_send);
-        ObjectDisposedException.ThrowIf(!guard.IsValid, this);
-        SendStream* stream = (SendStream*)guard.Pointer;
-        EndpointResult result;
-        fixed (byte* bufferPtr = buffer)
+        // The read lock serializes against Dispose: the native write borrows the send container
+        // (&mut box) and can block on flow control, so finishing it concurrently would be use-after-free.
+        _lock.EnterReadLock();
+        try
         {
-            result = _writeTimeout == Timeout.InfiniteTimeSpan
-                ? iroh.send_stream_write(&stream, new slice_ref_uint8 { ptr = bufferPtr, len = (nuint)buffer.Length })
-                : iroh.send_stream_write_timeout(&stream, new slice_ref_uint8 { ptr = bufferPtr, len = (nuint)buffer.Length }, (ulong)_writeTimeout.TotalMilliseconds);
-        }
+            using NativeGuard guard = new(_send);
+            ObjectDisposedException.ThrowIf(!guard.IsValid, this);
+            SendStream* stream = (SendStream*)guard.Pointer;
+            EndpointResult result;
+            fixed (byte* bufferPtr = buffer)
+            {
+                result = _writeTimeout == Timeout.InfiniteTimeSpan
+                    ? iroh.send_stream_write(&stream, new slice_ref_uint8 { ptr = bufferPtr, len = (nuint)buffer.Length })
+                    : iroh.send_stream_write_timeout(&stream, new slice_ref_uint8 { ptr = bufferPtr, len = (nuint)buffer.Length }, (ulong)_writeTimeout.TotalMilliseconds);
+            }
 
-        if (result == EndpointResult.ENDPOINT_RESULT_TIMEOUT)
-        {
-            // The native write is not cancel-safe (an unknown prefix may already have been written), so it must not be retried.
-            throw new TimeoutException($"The stream write did not complete within {_writeTimeout}.");
-        }
+            if (result == EndpointResult.ENDPOINT_RESULT_TIMEOUT)
+            {
+                // The native write is not cancel-safe (an unknown prefix may already have been written), so it must not be retried.
+                throw new TimeoutException($"The stream write did not complete within {_writeTimeout}.");
+            }
 
-        if (result != EndpointResult.ENDPOINT_RESULT_OK)
+            if (result != EndpointResult.ENDPOINT_RESULT_OK)
+            {
+                throw new IrohException(IrohErrorCode.SendError, "Failed to write to the stream.");
+            }
+        }
+        finally
         {
-            throw new IrohException(IrohErrorCode.SendError, "Failed to write to the stream.");
+            _lock.ExitReadLock();
         }
     }
 
@@ -218,35 +251,58 @@ public sealed class IrohStream : Stream
     public override void SetLength(long value) => throw new NotSupportedException("IrohStream does not support setting the length.");
 
     /// <summary>Finishes the send side (graceful FIN) and frees the receive side.</summary>
+    /// <remarks>
+    /// Native read/write calls borrow the stream containers for their entire — uncancellable —
+    /// duration. If one is still in flight after a bounded wait, both containers are deliberately
+    /// leaked instead of freed under the live borrow; the pending call then observes the closed
+    /// handle and fails with <see cref="ObjectDisposedException"/>.
+    /// </remarks>
     protected override void Dispose(bool disposing)
     {
         if (Interlocked.Exchange(ref _disposed, 1) == 0 && disposing)
         {
-            using (NativeGuard sendGuard = new(_send))
+            if (!_lock.TryEnterWriteLock(DisposeWaitTimeout))
             {
-                if (sendGuard.IsValid)
-                {
-                    unsafe
-                    {
-                        iroh.send_stream_finish((SendStream*)sendGuard.Pointer); // consumes the send container
-                    }
-                }
+                // A native read/write still borrows a container and cannot be interrupted; freeing it
+                // now would be use-after-free, so leak both as a safe degradation.
+                _send.SetHandleAsInvalid();
+                _recv.SetHandleAsInvalid();
+                base.Dispose(disposing);
+                return;
             }
 
-            _send.SetHandleAsInvalid();
-
-            using (NativeGuard recvGuard = new(_recv))
+            try
             {
-                if (recvGuard.IsValid)
+                using (NativeGuard sendGuard = new(_send))
                 {
-                    unsafe
+                    if (sendGuard.IsValid)
                     {
-                        iroh.recv_stream_free((RecvStream*)recvGuard.Pointer);
+                        unsafe
+                        {
+                            iroh.send_stream_finish((SendStream*)sendGuard.Pointer); // consumes the send container
+                        }
                     }
                 }
-            }
 
-            _recv.SetHandleAsInvalid();
+                _send.SetHandleAsInvalid();
+
+                using (NativeGuard recvGuard = new(_recv))
+                {
+                    if (recvGuard.IsValid)
+                    {
+                        unsafe
+                        {
+                            iroh.recv_stream_free((RecvStream*)recvGuard.Pointer);
+                        }
+                    }
+                }
+
+                _recv.SetHandleAsInvalid();
+            }
+            finally
+            {
+                _lock.ExitWriteLock();
+            }
         }
 
         base.Dispose(disposing);
@@ -261,25 +317,33 @@ public sealed class IrohStream : Stream
 
     private unsafe int ReadSlice(Span<byte> buffer, int timeoutMilliseconds)
     {
-        using NativeGuard guard = new(_recv);
-        ObjectDisposedException.ThrowIf(!guard.IsValid, this);
-        RecvStream* stream = (RecvStream*)guard.Pointer;
-        long read;
-        fixed (byte* bufferPtr = buffer)
+        _lock.EnterReadLock();
+        try
         {
-            read = iroh.recv_stream_read_timeout(&stream, new slice_mut_uint8 { ptr = bufferPtr, len = (nuint)buffer.Length }, (ulong)timeoutMilliseconds);
-        }
+            using NativeGuard guard = new(_recv);
+            ObjectDisposedException.ThrowIf(!guard.IsValid, this);
+            RecvStream* stream = (RecvStream*)guard.Pointer;
+            long read;
+            fixed (byte* bufferPtr = buffer)
+            {
+                read = iroh.recv_stream_read_timeout(&stream, new slice_mut_uint8 { ptr = bufferPtr, len = (nuint)buffer.Length }, (ulong)timeoutMilliseconds);
+            }
 
-        if (read == -2)
+            if (read == -2)
+            {
+                return -1; // idle slice; no data was consumed
+            }
+
+            if (read < 0)
+            {
+                throw new IrohException(IrohErrorCode.ReadError, "Failed to read from the stream.");
+            }
+
+            return (int)read;
+        }
+        finally
         {
-            return -1; // idle slice; no data was consumed
+            _lock.ExitReadLock();
         }
-
-        if (read < 0)
-        {
-            throw new IrohException(IrohErrorCode.ReadError, "Failed to read from the stream.");
-        }
-
-        return (int)read;
     }
 }

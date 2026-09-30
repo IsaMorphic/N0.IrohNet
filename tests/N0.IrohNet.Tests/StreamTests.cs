@@ -103,4 +103,54 @@ public class StreamTests
         await clientStream.ReadExactlyAsync(echoed);
         Assert.Equal(payload, echoed);
     }
+
+    [Fact]
+    public async Task Stream_DisposeDuringPendingRead_IsSafeAndBounded()
+    {
+        await using ConnectedPair pair = await IrohTestPair.CreateConnectedAsync();
+
+        // The peer never writes, so this read stays pending inside the native call
+        // (idle reads sit in recv_stream_read_timeout for the full 250 ms slice).
+        Stream clientStream = await pair.ClientConnection.OpenStreamAsync().WaitAsync(TestTimeouts.Handshake);
+        Task<int> pendingRead = clientStream.ReadAsync(new byte[16]).AsTask();
+
+        // Let the read reach and block inside the native slice.
+        await Task.Delay(100);
+
+        // Disposing while the native read borrows the recv container must neither crash
+        // (use-after-free) nor hang: the dispose completes within the bounded wait and the
+        // pending read surfaces a managed ObjectDisposedException on its next slice.
+        Task disposeTask = Task.Run(clientStream.Dispose);
+        await disposeTask.WaitAsync(TestTimeouts.Teardown);
+
+        await Assert.ThrowsAsync<ObjectDisposedException>(() => pendingRead).WaitAsync(TestTimeouts.Io);
+    }
+
+    [Fact]
+    public async Task Stream_DisposeDuringBlockedWrite_IsSafeAndBounded()
+    {
+        await using ConnectedPair pair = await IrohTestPair.CreateConnectedAsync();
+
+        // The peer never reads, so a large write eventually blocks in the native call on
+        // QUIC flow control; the write timeout keeps the block bounded.
+        Stream clientStream = await pair.ClientConnection.OpenStreamAsync().WaitAsync(TestTimeouts.Handshake);
+        clientStream.WriteTimeout = 2000;
+        Task writeTask = clientStream.WriteAsync(TestPayload.Pattern(16 * 1024 * 1024, 0x99)).AsTask();
+
+        await Task.Delay(100);
+
+        Task disposeTask = Task.Run(clientStream.Dispose);
+        await disposeTask.WaitAsync(TestTimeouts.Teardown);
+
+        // The blocked write ends in the managed TimeoutException (or ObjectDisposedException when
+        // the dispose won the race); a full completion is equally acceptable. All that must hold:
+        // no crash, and neither operation outlives the bounded waits.
+        try
+        {
+            await writeTask.WaitAsync(TestTimeouts.Io);
+        }
+        catch (Exception exception) when (exception is TimeoutException or ObjectDisposedException)
+        {
+        }
+    }
 }

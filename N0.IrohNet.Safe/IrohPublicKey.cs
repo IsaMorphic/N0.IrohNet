@@ -28,7 +28,7 @@ public readonly struct IrohPublicKey : IEquatable<IrohPublicKey>
         }
 
         byte[] input = InteropUtil.GetNulTerminatedUtf8(value);
-        PublicKey native = iroh.public_key_default();
+        PublicKey native = iroh.public_key_default(); // PublicKey is a by-value inline 32-byte struct; there is nothing to free (public_key_free is a no-op)
         fixed (byte* inputPtr = input)
         {
             if (iroh.public_key_from_base32(inputPtr, &native) != KeyResult.KEY_RESULT_OK)

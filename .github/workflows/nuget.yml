@@ -45,9 +45,12 @@ jobs:
       - name: Restore workloads
         run: dotnet workload restore
       - name: Build for x64
-        run: dotnet build N0.IrohNet.NativeAssets.${{ env.PACKAGE_ID_OS }} --framework net10.0 --runtime ${{ env.RUNTIME_ID_OS }}-x64
+        # The Linux assets project defaults to host `cargo` for linux-x64; release builds pin
+        # cargo-cross so the published .so keeps its historical glibc baseline (2.28) rather
+        # than linking against the runner's newer host toolchain.
+        run: dotnet build N0.IrohNet.NativeAssets.${{ env.PACKAGE_ID_OS }} --framework net10.0 --runtime ${{ env.RUNTIME_ID_OS }}-x64 -p:CargoBuildCommand="cargo cross"
       - name: Build for ARM64
-        run: dotnet build N0.IrohNet.NativeAssets.${{ env.PACKAGE_ID_OS }} --framework net10.0 --runtime ${{ env.RUNTIME_ID_OS }}-arm64
+        run: dotnet build N0.IrohNet.NativeAssets.${{ env.PACKAGE_ID_OS }} --framework net10.0 --runtime ${{ env.RUNTIME_ID_OS }}-arm64 -p:CargoBuildCommand="cargo cross"
       - name: Create NuGet package (native)
         run: dotnet pack N0.IrohNet.NativeAssets.${{ env.PACKAGE_ID_OS }} --output build/
       - name: Create NuGet package (managed)

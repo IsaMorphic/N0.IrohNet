@@ -330,6 +330,7 @@ public sealed class IrohEndpoint : IAsyncDisposable, IDisposable
                 {
                     if (iroh.endpoint_addr_from_string(ticketPtr, &addr) != AddrResult.ADDR_RESULT_OK)
                     {
+                        iroh.endpoint_addr_free(addr); // the parse failed, so native did not take ownership of the container
                         throw new IrohException(IrohErrorCode.InvalidEndpointAddr, $"The node address '{remote.Ticket}' could not be parsed.");
                     }
                 }
@@ -350,7 +351,18 @@ public sealed class IrohEndpoint : IAsyncDisposable, IDisposable
             }
 
             IrohConnection established = new(connectionHandle, (byte[])alpn.Clone(), this);
-            Track(established);
+            try
+            {
+                Track(established);
+            }
+            catch
+            {
+                // The endpoint closed while the connect completed; dispose deterministically so the
+                // connection's pump thread does not linger until finalization.
+                established.Dispose();
+                throw;
+            }
+
             return established;
         }
         finally
@@ -383,7 +395,18 @@ public sealed class IrohEndpoint : IAsyncDisposable, IDisposable
 
             byte[] negotiatedAlpn = InteropUtil.ToArrayAndFree(ref alpnBuffer);
             IrohConnection accepted = new(connectionHandle, negotiatedAlpn, this);
-            Track(accepted);
+            try
+            {
+                Track(accepted);
+            }
+            catch
+            {
+                // The endpoint closed while the accept completed; dispose deterministically so the
+                // connection's pump thread does not linger until finalization.
+                accepted.Dispose();
+                throw;
+            }
+
             return accepted;
         }
         finally

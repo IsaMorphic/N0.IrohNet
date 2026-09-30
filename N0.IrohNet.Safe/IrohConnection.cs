@@ -64,6 +64,7 @@ public sealed class IrohConnection : IAsyncDisposable, IDisposable
     }
 
     /// <summary>Gets the estimated round-trip time of the connection's selected path, or zero when no path is selected.</summary>
+    /// <remarks>Performs a lightweight native query on the calling thread.</remarks>
     public unsafe TimeSpan Rtt
     {
         get
@@ -84,6 +85,7 @@ public sealed class IrohConnection : IAsyncDisposable, IDisposable
     }
 
     /// <summary>Gets the ratio of lost packets to sent packets on the selected path, or zero when nothing was sent yet.</summary>
+    /// <remarks>Performs a lightweight native query on the calling thread.</remarks>
     public unsafe double PacketLoss
     {
         get
@@ -212,42 +214,52 @@ public sealed class IrohConnection : IAsyncDisposable, IDisposable
     private unsafe void PumpDatagrams()
     {
         Vec_uint8 buffer = default;
-        while (true)
+        try
         {
-            bool stopping = true;
-            EndpointResult result = EndpointResult.ENDPOINT_RESULT_TIMEOUT;
-            _lock.EnterReadLock();
-            try
+            while (true)
             {
-                if (!_closed)
+                bool stopping = true;
+                EndpointResult result = EndpointResult.ENDPOINT_RESULT_TIMEOUT;
+                _lock.EnterReadLock();
+                try
                 {
-                    using NativeGuard guard = new(_handle);
-                    if (guard.IsValid)
+                    if (!_closed)
                     {
-                        stopping = false;
-                        Connection* connection = (Connection*)guard.Pointer;
-                        result = iroh.connection_read_datagram_timeout(&connection, &buffer, DatagramPollMilliseconds);
+                        using NativeGuard guard = new(_handle);
+                        if (guard.IsValid)
+                        {
+                            stopping = false;
+                            Connection* connection = (Connection*)guard.Pointer;
+                            result = iroh.connection_read_datagram_timeout(&connection, &buffer, DatagramPollMilliseconds);
+                        }
                     }
                 }
-            }
-            finally
-            {
-                _lock.ExitReadLock();
-            }
+                finally
+                {
+                    _lock.ExitReadLock();
+                }
 
-            if (stopping)
-            {
-                break;
-            }
+                if (stopping)
+                {
+                    break;
+                }
 
-            if (result == EndpointResult.ENDPOINT_RESULT_OK)
-            {
-                _incomingDatagrams.Writer.TryWrite(InteropUtil.ToArrayAndFree(ref buffer));
+                if (result == EndpointResult.ENDPOINT_RESULT_OK)
+                {
+                    _incomingDatagrams.Writer.TryWrite(InteropUtil.ToArrayAndFree(ref buffer));
+                }
+                else if (result != EndpointResult.ENDPOINT_RESULT_TIMEOUT)
+                {
+                    break; // the connection is gone (read error); complete the queue
+                }
             }
-            else if (result != EndpointResult.ENDPOINT_RESULT_TIMEOUT)
-            {
-                break; // the connection is gone (read error); complete the queue
-            }
+        }
+        catch (Exception exception)
+        {
+            // An unhandled exception on a raw thread terminates the process; a pump failure must
+            // degrade into a completed queue (readers see it as the channel's error) instead.
+            _incomingDatagrams.Writer.TryComplete(exception);
+            return;
         }
 
         _incomingDatagrams.Writer.TryComplete();

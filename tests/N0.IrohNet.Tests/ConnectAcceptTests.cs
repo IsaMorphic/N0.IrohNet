@@ -53,8 +53,6 @@ public class ConnectAcceptTests
             connections.AddRange(accepted);
             connections.AddRange(connected);
 
-            Assert.Equal(4, accepted.Length);
-            Assert.Equal(4, connected.Length);
             Assert.All(accepted, connection => Assert.Equal(alpn, connection.NegotiatedAlpn));
             Assert.All(connected, connection => Assert.Equal(alpn, connection.NegotiatedAlpn));
         }

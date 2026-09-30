@@ -53,8 +53,9 @@
 	</ItemGroup>
 
 	<PropertyGroup>
-		<!-- x64 builds compile natively with plain cargo (works locally and in CI);
-		     cross-compiled targets (arm64) still require cargo-cross -->
+		<!-- Host builds (developer machines, test CI) compile linux-x64 natively with plain cargo;
+		     NuGet release builds override this to cargo cross (see nuget.yml) so published binaries
+		     keep cargo-cross's older glibc baseline. Other targets always require cargo-cross. -->
 		<CargoBuildCommand Condition="'$(RuntimeIdentifier)' == 'linux-x64'">cargo</CargoBuildCommand>
 		<CargoBuildCommand Condition="'$(RuntimeIdentifier)' != 'linux-x64'">cargo cross</CargoBuildCommand>
 	</PropertyGroup>

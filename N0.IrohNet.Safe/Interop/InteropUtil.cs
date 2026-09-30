@@ -45,6 +45,7 @@ internal static unsafe class InteropUtil
         {
             if (iroh.endpoint_addr_from_string(inputPtr, &addr) != AddrResult.ADDR_RESULT_OK)
             {
+                iroh.endpoint_addr_free(addr); // the parse failed, so native did not take ownership of the container
                 return false;
             }
         }
